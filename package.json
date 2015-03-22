@@ -1,0 +1,36 @@
+{
+  "name": "mocha-stirrer",
+  "version": "0.1.0",
+  "description": "Easily mock and set up tests for Mocha and Sinon",
+  "main": "index.js",
+  "scripts": {
+    "test": "grunt build --verbose"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yoavniran/mocha-stirrer"
+  },
+  "keywords": [
+    "mocha",
+    "sinon",
+    "unit-test"
+  ],
+  "author": "Yoav Niran",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yoavniran/mocha-stirrer/issues"
+  },
+  "peerDependencies": {
+    "sinon": "*"
+  },
+  "devDependencies": {
+    "chai": "^2.1.2",
+    "dirty-chai": "^1.2.0",
+    "grunt": "^0.4.5",
+    "grunt-contrib-jshint": "^0.11.1",
+    "grunt-mocha-test": "^0.12.7",
+    "mocha": "^2.2.1",
+    "sinon": "*",
+    "time-grunt": "^1.1.0"
+  }
+}

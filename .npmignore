@@ -1,0 +1,7 @@
+.git*
+*.iml
+*.log
+.DS_Store
+docs/
+examples/
+test/
