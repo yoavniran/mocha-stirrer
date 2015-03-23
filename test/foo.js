@@ -1,13 +1,24 @@
 var path = require("path");
+    var Bar = require("./sub/bar");
 
-module.exports = {
+module.exports = (function () {
+    "use strict";
 
-    bar: function () {
-        return "foo";
-    },
-    wat: function (a, b) {
-        return path.join(a, b);
-    }
-
-};
+    return {
+        bar: function () {
+            return "foo";
+        },
+        wat: function (a, b) {
+            return path.join(a, b);
+        },
+        useSub: function () {
+            var bar = new Bar();
+            return bar.start();
+        },
+        useSubDep: function(test){
+            var bar = new Bar();
+            return bar.useDep(test);
+        }
+    };
+})();
 
