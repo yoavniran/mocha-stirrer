@@ -20,6 +20,16 @@
   "bugs": {
     "url": "https://github.com/yoavniran/mocha-stirrer/issues"
   },
+  "config": {
+    "blanket": {
+      "pattern": [
+        "lib"
+      ]
+    },
+    "travis-cov": {
+      "threshold": 98
+    }
+  },
   "peerDependencies": {
     "sinon": "*"
   },
@@ -27,12 +37,18 @@
     "chai": "^2.1.2",
     "dirty-chai": "^1.2.0",
     "grunt": "^0.4.5",
+    "grunt-blanket": "0.0.8",
+    "grunt-contrib-clean": "^0.6.0",
+    "grunt-contrib-copy": "^0.8.0",
     "grunt-contrib-jshint": "^0.11.1",
+    "grunt-coveralls": "^1.0.0",
     "grunt-mocha-test": "^0.12.7",
     "mocha": "^2.2.1",
+    "mocha-lcov-reporter": "0.0.2",
     "sinon": "*",
     "sinon-chai": "^2.7.0",
-    "time-grunt": "^1.1.0"
+    "time-grunt": "^1.1.0",
+    "travis-cov": "^0.2.5"
   },
   "dependencies": {
     "debug": "^2.1.3"

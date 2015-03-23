@@ -4,8 +4,6 @@ var chai = require("chai"),
     sinonChai = require("sinon-chai"),
     stirrer = require("../lib/stirrer");
 
-var Module = require("module");
-
 describe("testing auto mocking for require", function () {
     "use strict";
 
