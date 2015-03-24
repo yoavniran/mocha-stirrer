@@ -5,7 +5,7 @@ var chai = require("chai"),
     utils = require("../lib/utils");
 
 describe("utils tests", function () {
-
+    "use strict";
     chai.use(dirtyChai);
     chai.use(sinonChai);
 
@@ -67,12 +67,12 @@ describe("utils tests", function () {
         });
 
         it("should be true for newed object", function () {
-            var arr = new Array();
+            var arr = new Array();   // jshint ignore:line
             expect(utils.isArray(arr)).to.be.true();
         });
 
         it("should be false for  object", function () {
-            var arr = new Object();
+            var arr = new Object();   // jshint ignore:line
             expect(utils.isArray(arr)).to.not.be.ok();
         });
 
