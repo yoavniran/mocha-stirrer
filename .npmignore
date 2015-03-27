@@ -5,3 +5,8 @@
 docs/
 examples/
 test/
+.coveralls.yml
+output/coverage.lcov.txt
+output/coverage/
+output/coverage.html
+.travis.yml

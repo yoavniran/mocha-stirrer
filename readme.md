@@ -33,16 +33,16 @@ Creates a **[Cup](#cupSection)**  instance.
 
 _conf_ is an object that configures the cup instance. The following properties can be passed in:
 
-* name - (optional) any string that will be used for naming mocha hooks
-* pars - (optional) object map or function that returns an object map. Used to pass parameters in that are stored and can be used between tests
-* spies - (optional) object map or function returning an object map. Used to create [sinon spies](http://sinonjs.org/docs/#spies-api),
+* `name` - (optional) any string that will be used for naming mocha hooks
+* `pars` - (optional) object map or function that returns an object map. Used to pass parameters in that are stored and can be used between tests
+* `spies` - (optional) object map or function returning an object map. Used to create [sinon spies](http://sinonjs.org/docs/#spies-api),
 					each entry in the object map can be one of the following:
 
 					1. An array with 2 the first element referencing an object, second is the property name
                     2. A function to spy
                     3. A special EMPTY string (_stirrer.EMPTY_) to receive an anonymous spy
 
-* stubs - (optional) object map or function returning an object map. Used to create [sinon stubs](http://sinonjs.org/docs/#stubs-api),
+* `stubs` - (optional) object map or function returning an object map. Used to create [sinon stubs](http://sinonjs.org/docs/#stubs-api),
                     each entry in the object map can be one of the following:
 
                     1. An array with 2 or 3 elements, the first element referencing an object, second is the property name
@@ -50,36 +50,37 @@ _conf_ is an object that configures the cup instance. The following properties c
                     2. An object to be stubbed by sinon
                     3. A special EMPTY string (_stirrer.EMPTY_) to receive an empty stub
 
-* mocks - (optional) object map or function returning an object map. Used to create [sinon mocks](http://sinonjs.org/docs/#mocks-api),
+* `mocks` - (optional) object map or function returning an object map. Used to create [sinon mocks](http://sinonjs.org/docs/#mocks-api),
 				each entry in the object map should be an object reference
 
-* transform - (optional) function receives the currently assigned parameters to the cup instance (cup.pars). If provided, transform
+* `transform` - (optional) function receives the currently assigned parameters to the cup instance (cup.pars). If provided, transform
 will be run every time the cup setup logic is executed which, unless the setupImmediate flag is set to true, will be during the before
  or beforeEach hook
 
-* before - (optional) a function that will be called before ([mocha hooks](http://mochajs.org/#hooks)) tests are run within a describe/context block
+* `before` - (optional) a function that will be called before ([mocha hooks](http://mochajs.org/#hooks)) tests are run within a describe/context block
 receives a reference to the cup (first argument) and a reference to the done callback. Very similarly to Mocha, if you define a
 second parameter Stirrer will assume you need it and you will have to call _done();_ in your method or your test will fail
 with a timeout error
 
-* after - (optional)  a function that will be called after ([mocha hooks](http://mochajs.org/#hooks)) tests ran within a describe/context block
+* `after` - (optional)  a function that will be called after ([mocha hooks](http://mochajs.org/#hooks)) tests ran within a describe/context block
 receives a reference to the cup (first argument) and a reference to the done callback. Very similarly to Mocha, if you define a
 second parameter Stirrer will assume you need it and you will have to call _done();_ in your method or your test will fail
 with a timeout error
 
-* sandbox - (optional) an object with properties to configure the internal [sinon sandbox](http://sinonjs.org/docs/#sandbox) object Stirrer creates.
+* `sandbox` - (optional) an object with properties to configure the internal [sinon sandbox](http://sinonjs.org/docs/#sandbox) object Stirrer creates.
 
-* setupImmediate - (optional, default: false) makes the stirrer run its set up logic immediately during the execution of the grind method.
+* `setupImmediate` - (optional, default: false) makes the stirrer run its set up logic immediately during the execution of the grind method.
 Also, the setup logic will only be executed once - this is good for a standalone cup that will not be reused between tests.
 If left as false, the setup will happen during the first before or beforeEach hook prior to a test being executed.
 
-* dontRestir - (optional, default: false) (see [restir](#restirSection)) will prevent the cup from being "restirred" (reset) in the
+* `dontRestir` - (optional, default: false) (see [restir](#restirSection)) will prevent the cup from being "restirred" (reset) in the
 after or afterEach hook
 
-* requires -
-* befores - (optional)
+* `requires` - (optional)
 
-* afters - (optional)
+* `befores` - (optional)
+
+* `afters` - (optional)
 
 _testFn_
 
@@ -101,7 +102,7 @@ ___
 <a name="cupSection" />
 ## The Cup
 
-``` javascript
+```js
 
 	var stirrer = require("mocha-stirrer");
 
@@ -127,7 +128,7 @@ ___
 Calling grind on stirrer creates an instance of _cup_. You can reuse a cup instance between tests easily using the _pour_ method.
 
 
-``` javascript
+```js
 
 	var cup = stirrer.grind({});
 
@@ -159,7 +160,8 @@ Mocker will stub all of the module's dependencies by default. You can pass a lis
 
 ###
 
-``` javascript
+```js
+
   var a = {};
 ```
 

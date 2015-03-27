@@ -10,8 +10,6 @@ describe("testing auto mocking for require", function () {
     chai.use(dirtyChai); //use lint-friendly chai assertions!
     chai.use(sinonChai);
 
-    var cup = stirrer.grind();
-
     it("requiring the module should normally should work normally", function(){
 
         var foo = require("./foo");
@@ -25,6 +23,8 @@ describe("testing auto mocking for require", function () {
     });
 
     describe("testing mock require", function () {    //wrapping in describe for the restir to
+
+        var cup = stirrer.grind();
 
         cup.pour("should mock require successfully", function (done) {
 
@@ -50,6 +50,8 @@ describe("testing auto mocking for require", function () {
     });
 
     describe("testing mock require with stub setup", function(){
+
+        var cup = stirrer.grind();
 
         cup.pour("should mock require and setup stub successfully", function () {
 
