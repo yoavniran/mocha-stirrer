@@ -10,7 +10,7 @@ describe("testing auto mocking for require", function () {
     chai.use(dirtyChai); //use lint-friendly chai assertions!
     chai.use(sinonChai);
 
-    it("requiring the module should normally should work normally", function(){
+    it("requiring the module should normally should work normally", function () {
 
         var foo = require("./foo");
 
@@ -22,65 +22,69 @@ describe("testing auto mocking for require", function () {
         expect(foo.useFuncDep()).to.equal("foo");
     });
 
-    describe("testing mock require", function () {    //wrapping in describe for the restir to
+    describe("testing mock require", function () {    //wrapping in describe for the restir to clear the mock require
 
-        var cup = stirrer.grind();
+        var cup = stirrer.grind({
+            name:"RequireMocker.test - TEST #1"
+        });
 
         cup.pour("should mock require successfully", function (done) {
 
-                var foo = cup.require("./foo", {
-                    dontStub: ["fs"]
-                });
-
-                expect(foo).to.exist();
-                expect(foo.bar()).to.equal("foo");
-                expect(foo.wat("a", "b")).to.not.exist(); //internally path should be stubbed and not set up to return anything
-                expect(foo.useSub()).to.not.exist();
-                expect(foo.useSubDep("world")).to.not.exist();
-                expect(foo.useFuncDep()).to.not.exist();
-
-                var Bar = require("./sub/bar");
-
-                expect(Bar.prototype.useDep).to.have.been.calledWith("world");
-
-                foo.fs(function(){
-                    done();
-                });
+            var foo = cup.require("./foo", {
+                dontStub: ["fs"]
             });
+
+            expect(foo).to.exist();
+            expect(foo.bar()).to.equal("foo");
+            expect(foo.wat("a", "b")).to.not.exist(); //internally path should be stubbed and not set up to return anything
+            expect(foo.useSub()).to.not.exist();
+            expect(foo.useSubDep("world")).to.not.exist();
+            expect(foo.useFuncDep()).to.not.exist();
+
+            var Bar = require("./sub/bar");
+
+            expect(Bar.prototype.useDep).to.have.been.calledWith("world");
+
+            foo.fs(function () {
+                done();
+            });
+        });
     });
 
-    describe("testing mock require with stub setup", function(){
+    describe("testing mock require with stub setup", function () {
 
-        var cup = stirrer.grind();
+        var cup = stirrer.grind({
+            name: "RequireMocker.test - TEST #2"
+        });
 
         cup.pour("should mock require and setup stub successfully", function () {
 
-                var foo = cup.require("./foo", {
-                    setup: {
-                        "./sub/bar": function (stub) {
-                            //set up the stub function to return a static string
-                            stub.prototype.useDep.returns("this works!");
-                        },
-                        "./sub/func": function(stub){
-                            stub.returns("bla bla");
-                        }
+            var foo = cup.require("./foo", {
+                setup: {
+                    "./sub/bar": function (stub) {
+                        //set up the stub function to return a static string
+                        stub.prototype.useDep.returns("this works!");
+                    },
+                    "./sub/func": function (stub) {
+                        stub.returns("bla bla");
                     }
-                });
-
-                expect(foo).to.exist();
-                expect(foo.bar()).to.equal("foo");
-                expect(foo.wat("a", "b")).to.not.exist(); //internally path should be stubbed and not set up to return anything
-                expect(foo.useSub()).to.not.exist();
-                expect(foo.useSubDep("world")).to.equal("this works!");
-                expect(foo.useFuncDep()).to.equal("bla bla");
-
-                var Bar = require("./sub/bar");
-
-                expect(Bar.prototype.useDep).to.have.been.calledWith("world");
+                }
             });
-        });
 
-    it("requiring the same module normally again should now work normally still", function(){
+            expect(foo).to.exist();
+            expect(foo.bar()).to.equal("foo");
+            expect(foo.wat("a", "b")).to.not.exist(); //internally path should be stubbed and not set up to return anything
+            expect(foo.useSub()).to.not.exist();
+            expect(foo.useSubDep("world")).to.equal("this works!");
+            expect(foo.useFuncDep()).to.equal("bla bla");
+
+            var Bar = require("./sub/bar");
+
+            expect(Bar.prototype.useDep).to.have.been.calledWith("world");
+        });
+    });
+
+    it("requiring the same module normally again should now work normally still", function () {
 
         var foo = require("./foo");
 

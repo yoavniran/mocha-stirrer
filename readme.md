@@ -23,8 +23,70 @@ or as part of the stirrer functionality. Read more about it [below](#requireMock
 
 ___
 
+## Example
+
+Below is a full example showing how Stirrer can be used to set up ([grind](#grindSection)) a test and then run a test ([pour](#pourSection)))
+ using the fakes set up and verification defined:
+
+Jump [here](docsSection) for the full API documentation
+
+```js
+
+	var stirrer = require("../lib/stirrer");
+
+	describe("use stirrer simple", function () {
+
+	    var foo = require("./foo");
+	    var Bar = require("./sub/bar");
+	    var fs = require("fs");
+	    var path = require("path");
+
+	    var cup = stirrer.grind({
+	        name: "TEST #3",
+	        stubs: {
+	            "barGetStats": [Bar.prototype, "getStats"]
+	        },
+	        spies: {
+	            "pathJoin": [path, "join"]
+	        },
+	        mocks: {
+	            "fs": fs
+	        },
+	        before: function (cup) {
+	            cup.stubs.barGetStats.returns("stats!");
+	            cup.mocks.fs.expects("readdir").once().callsArgWithAsync(1, "oh no!");
+	        },
+	        after: function () {
+	            expect(cup.stubs.barGetStats.calledOnce).to.be.true();
+	            expect(cup.spies.pathJoin.calledOnce).to.be.true();
+	        }
+	    });
+
+	    cup.pour("fakes setup should work as defined", function (done) {
+
+	        expect(Bar.prototype.getStats).to.equal(cup.stubs.barGetStats);
+
+	        var stats = foo.barStats();
+	        expect(stats).to.equal("stats!");
+
+	        var res = foo.wat("a", "b");
+	        expect(res).to.equal("a/b");
+
+	        foo.fs(function (err) {
+	            expect(err).to.equal("oh no!");
+	            done();
+	        });
+	    });
+	});
+
+```
+
+___
+
+<a name="docsSection"/>
 ## Stirrer API
 
+<a name="grindSection"/>
 ### grind(conf, testFn)
 
 > Alias: create
@@ -67,7 +129,12 @@ receives a reference to the cup (first argument) and a reference to the done cal
 second parameter Stirrer will assume you need it and you will have to call _done();_ in your method or your test will fail
 with a timeout error
 
+* `beforeEach` - (optional)
+
 * `sandbox` - (optional) an object with properties to configure the internal [sinon sandbox](http://sinonjs.org/docs/#sandbox) object Stirrer creates.
+
+* `transformForEach` - (optional, default: false) when set to true determines whether the supplied (pars) transform function
+should be run as part of a beforeEach hook. When false will run as part of a before hook
 
 * `setupImmediate` - (optional, default: false) makes the stirrer run its set up logic immediately during the execution of the grind method.
 Also, the setup logic will only be executed once - this is good for a standalone cup that will not be reused between tests.
@@ -85,6 +152,7 @@ after or afterEach hook
 _testFn_
 
 A test function to be run immediately with the cup object. Provides a shortcut to calling _pour(...)_ on the cup object.
+
 
 <a name="restirSection"/>
 ### restir(cup)
@@ -111,9 +179,80 @@ ___
 
 ### stir(conf)
 
-### stirEach(conf)
 
-> Not implemented yet
+	`pars` -
+
+	`befores` - array of methods or a single method to be executed before each test. whether a series of before methods is passed
+	in an array or if its a single method, each method receives a '_next_' function reference as a parameter which it must call.
+	Failing to call next() will cause timeouts as the flow will not progress
+
+
+	`afters` - array of methods or a single method to be executed after each test. whether a series of before methods is passed
+             	in an array or if its a single method, each method receives a '_next_' function reference as a parameter which it must call.
+             	Failing to call next() will cause timeouts as the flow will not progress
+
+
+<a name="pourSection"/>
+###pour
+> Alias: test
+
+the Pour method mimics Mocha's '_it_' function and supports it's different flavors:
+
+1. [Synchronous](http://mochajs.org/#synchronous-code)
+2. [Asynchronous](http://mochajs.org/#asynchronous-code)
+3. [Pending](http://mochajs.org/#pending-tests)
+4. [Exclusive](http://mochajs.org/#exclusive-tests)
+5. [Inclusive](http://mochajs.org/#inclusive-tests)
+
+Here's a simple example of using pour:
+
+```js
+
+    cup.pour("my test", function(){
+
+        //this === cup - the cup is passed as the context for this function so you can do:
+        // this.pars.myPar or this.stubs.myStub
+    });
+
+```
+
+As mentioned, everything that you could do with Mocha's '_it_' method you can do with pour so this works:
+
+```js
+
+	cup.pour.only("my test", function(){
+		//this will make Mocha run your test function exclusively
+	});
+
+```
+
+If your test function runs asynchronous code then just like with Mocha, you have the done callback to signal the test is done:
+
+```js
+
+	cup.pour("my test", function(done){
+		//this will make Mocha run your test function exclusively
+
+		done(); //make sure tal call done so Mocha doesnt timeout
+	});
+
+```
+
+If you want to use Mocha's '_it_' you can call pour like this:
+
+```js
+
+	cup.pour.wrap("my test", function(){
+	    //now its up to you to use Mocha's it:
+		//still true: this === cup
+
+	    it("this is actually my test now", function(){
+	    });
+	});
+
+```
+
+
 
 ### restir()
 
