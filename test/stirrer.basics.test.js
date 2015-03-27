@@ -201,6 +201,37 @@ describe("stirrer basicstests", function () {
         });
     });
 
+    describe("test empty spy and stub", function () {
+
+        var stirrer = require("../lib/stirrer");
+
+        var cup = stirrer.grind({
+
+            stubs: {
+                "emptyStub": stirrer.EMPTY
+            },
+            spies: {
+                "emptySpy": stirrer.EMPTY
+            },
+            before: function () {
+                cup.stubs.emptyStub.returns("foo");
+            }
+        });
+
+        cup.pour("check empty fakes", function () {
+
+            var stubRes = this.stubs.emptyStub();
+
+            expect(stubRes).to.equal("foo");
+            expect(this.stubs.emptyStub.calledOnce).to.be.true();
+
+            this.spies.emptySpy();
+            expect(this.spies.emptySpy.calledOnce).to.be.true();
+        });
+
+    });
+
+
     describe("test call order", function () {
 
         var stirrer = require("../lib/stirrer");
@@ -292,9 +323,9 @@ describe("stirrer basicstests", function () {
                     }
                 });
 
-                cup.pour("test #1", function () {
+                cup.pour("test #1", function (done) {
                     expect(advanceCounter()).to.equal(2);
-                    //done();
+                    done();
                 });
             });
 
@@ -319,19 +350,133 @@ describe("stirrer basicstests", function () {
             });
 
             after("check on counter", function () {
-               expect(counter).to.equal(6);
+                expect(counter).to.equal(6);
+            });
+        });
+
+        describe("test correct order of calls - with async hooks", function () {
+
+            var counter = 0;
+
+            function advanceCounter() {
+                counter += 1;
+                return counter;
+            }
+
+            var cup = stirrer.grind({
+
+                before: function (cupInst, done) {
+                    expect(cupInst).to.equal(cup);
+                    expect(advanceCounter()).to.equal(1);
+                    done();
+                },
+                beforeEach: function (cupInst, done) {
+                    expect(cupInst).to.equal(cup);
+                    expect(advanceCounter()).to.equal(2);
+                    done();
+                },
+                after: function (cupInst, done) {
+                    expect(cupInst).to.equal(cup);
+                    expect(advanceCounter()).to.equal(5);
+                    done();
+                },
+                afterEach: function (cupInst, done) {
+                    expect(cupInst).to.equal(cup);
+                    expect(advanceCounter()).to.equal(4);
+                    done();
+                }
+            });
+
+            cup.pour("this is my test", function (done) {
+                expect(advanceCounter()).to.equal(3);
+
+                done();
+            });
+
+            after("check that final counter is correct", function () {
+                expect(counter).to.equal(5);
             });
         });
 
         describe("test correct order with skip", function () {
 
-        });
+            var counter = 0;
 
-        describe("test correct order with only", function () {
+            var cup = stirrer.grind({
+                after: function () {
+                    expect(counter).to.equal(1);
 
+                    counter += 1;
+                }
+            });
+
+            cup.pour.skip("skipped test", function () {
+                counter += 1;
+            });
+
+            cup.pour("run test", function () {
+                counter += 1;
+            });
+
+            after("check up on cup after", function () {
+                expect(counter).to.equal(2);
+            });
         });
 
         describe("test correct order with wrap", function () {
+
+            var counter = 0;
+
+            var cup = stirrer.grind({
+                beforeEach: function () {
+                    counter += 1;
+                },
+                afterEach: function () {
+                    counter += 1;
+                },
+                after: function () {
+                    expect(counter).to.equal(2);
+                    counter += 1;
+                }
+            });
+
+            cup.pour.wrap("this isnt a test, just a wrapper", function () {
+
+            });
+
+            cup.pour.wrap("this is a wrapper too but with a test inside", function () {
+
+                it("this is a test inside a wrapper", function () {
+
+                });
+            });
+
+            after("checking up that all hooks were called", function () {
+                expect(counter).to.equal(3);
+            });
+        });
+
+        describe("test correct order with pending", function () {
+
+            var counter = 0;
+
+            var cup = stirrer.grind({
+                beforeEach: function () {
+                    counter += 1;
+                },
+                afterEach: function () {
+                    counter += 1;
+                },
+                after: function () {
+                    counter += 1;
+                }
+            });
+
+            cup.pour("this is a pending test using pour");
+
+            after("checking up that all hooks were called", function () {
+                expect(counter).to.equal(1);
+            });
 
         });
     });
