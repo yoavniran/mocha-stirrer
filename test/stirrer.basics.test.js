@@ -287,14 +287,14 @@ describe("stirrer basicstests", function () {
                         next();
                     },
                     afters: function (next) {
-                        expect(advanceCounter()).to.equal(5);
+                        expect(advanceCounter()).to.equal(3);
                         next();
                     }
                 });
 
-                cup.pour("test #1", function (done) {
+                cup.pour("test #1", function () {
                     expect(advanceCounter()).to.equal(2);
-                    done();
+                    //done();
                 });
             });
 
@@ -303,7 +303,7 @@ describe("stirrer basicstests", function () {
                 var cup = stirrer.grind({
                     name: "order test with async pour- TEST #2",
                     befores: function (next) {
-                        expect(advanceCounter()).to.equal(3);
+                        expect(advanceCounter()).to.equal(4);
                         next();
                     },
                     afters: function (next) {
@@ -312,9 +312,9 @@ describe("stirrer basicstests", function () {
                     }
                 });
 
-                cup.pour("test #2", function (done) {
-                    expect(advanceCounter()).to.equal(4);
-                    done();
+                cup.pour("test #2", function () {
+                    expect(advanceCounter()).to.equal(5);
+                    //done();
                 });
             });
 
