@@ -1,6 +1,7 @@
 [![Coverage Status](https://coveralls.io/repos/yoavniran/mocha-stirrer/badge.svg?branch=master)](https://coveralls.io/r/yoavniran/mocha-stirrer?branch=master)
 [![Build Status](https://travis-ci.org/yoavniran/mocha-stirrer.svg?branch=master)](https://travis-ci.org/yoavniran/mocha-stirrer)
 [![Dependencies](https://david-dm.org/yoavniran/mocha-stirrer.svg)]((https://david-dm.org/yoavniran/mocha-stirrer.svg))
+[![devDependency Status](https://david-dm.org/yoavniran/mocha-stirrer/dev-status.svg)](https://david-dm.org/yoavniran/mocha-stirrer#info=devDependencies)
 [![Codacy Badge](https://www.codacy.com/project/badge/12374261d28a40a5b05054d5b78c783b)](https://www.codacy.com/app/yoavniran/mocha-stirrer)
 [![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)](http://gruntjs.com/)
 
@@ -28,7 +29,7 @@ ___
 Below is a full example showing how Stirrer can be used to set up ([grind](#grindSection)) a test and then run a test ([pour](#pourSection)))
  using the fakes set up and verification defined:
 
-Jump [here](docsSection) for the full API documentation
+Jump [here](#docsSection) for the full API documentation
 
 ```js
 

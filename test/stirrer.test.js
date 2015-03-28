@@ -252,6 +252,38 @@ describe("stirrer tests", function () {
             });
         });
 
+        describe("use stirrer cup with stubbed object and spied object", function () {
+
+            var foo = require("./foo");
+            var Bar = require("./sub/bar");
+            var path = require("path");
+
+            var cup = stirrer.grind({
+                name: "TEST #6",
+                stubs: {
+                    "bar": Bar.prototype
+                },
+                spies: {
+                    "pathJoin": path.join
+                },
+                before: function (cup) {
+                    cup.stubs.bar.getStats.returns("stats!");
+                },
+                after: function () {
+                    expect(cup.stubs.bar.getStats.calledOnce).to.be.true();
+                }
+            });
+
+            cup.pour("test faked objects", function(){
+
+                var stats = foo.barStats();
+                expect(stats).to.equal("stats!");
+
+                var joined = this.spies.pathJoin("1", "2");
+                expect(joined).to.equal("1/2");
+            });
+        });
+
         describe("use stirrer cup with requires (mocker)", function () {
 
 

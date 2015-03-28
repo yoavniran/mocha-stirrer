@@ -1,7 +1,7 @@
 {
   "name": "mocha-stirrer",
   "version": "0.1.0",
-  "description": "Easily mock and set up tests for Mocha and Sinon",
+  "description": "Easily mock and set up tests for Mocha and Sinon then test, then reuse",
   "main": "./lib/stirrer.js",
   "scripts": {
     "test": "grunt build --verbose"
@@ -16,7 +16,12 @@
     "unit-test"
   ],
   "author": "Yoav Niran",
-  "license": "WTFPL",
+  "licenses": [
+    {
+      "type": "WTFPL",
+      "url": "https://raw.githubusercontent.com/yoavniran/mocha-stirrer/master/LICENSE"
+    }
+  ],
   "bugs": {
     "url": "https://github.com/yoavniran/mocha-stirrer/issues"
   },
