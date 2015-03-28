@@ -231,7 +231,6 @@ describe("stirrer basicstests", function () {
 
     });
 
-
     describe("test call order", function () {
 
         var stirrer = require("../lib/stirrer");
@@ -345,7 +344,6 @@ describe("stirrer basicstests", function () {
 
                 cup.pour("test #2", function () {
                     expect(advanceCounter()).to.equal(5);
-                    //done();
                 });
             });
 
@@ -478,6 +476,82 @@ describe("stirrer basicstests", function () {
                 expect(counter).to.equal(1);
             });
 
+        });
+
+        describe("test correct order with stirring in befores in different context", function () {
+            var counter = 0;
+
+            function advanceCounter() {
+                counter += 1;
+                return counter;
+            }
+
+            var cup = stirrer.grind();
+
+            describe("first context", function () {
+
+                cup.stir({
+                    pars: {
+                        "firstPar": 1
+                    },
+                    befores: function (next) {
+                        console.log("++++++++++++++++++++ context 1 - before");
+                        advanceCounter();
+                        next();
+                    },
+                    afters:[
+                        function(next) {
+                            console.log("++++++++++++++++++++ context 1 - after1");
+                            advanceCounter();
+                            next();
+                        },
+                        function(next) {
+                            console.log("++++++++++++++++++++ context 1 - after2");
+                            advanceCounter();
+                            next();
+                        }
+                    ]
+                });
+
+                cup.pour("first test",function(){
+                    console.log("++++++++++++++++++++ context 1 - test");
+                    expect(advanceCounter()).to.equal(2);
+                    expect(this.pars.firstPar).to.equal(1);
+                    expect(this.pars.secondPar).to.be.undefined();
+                });
+            });
+
+            describe("second context", function () {
+
+                cup.stir({ //can stir again and add to any existing pars/befores/afters
+                    pars: {
+                        "secondPar": 2
+                    },
+                    befores:[ function (next) {
+                        console.log("++++++++++++++++++++ context 2 - before1");
+                        advanceCounter();
+                        expect(this.pars.firstPar).to.equal(1);
+                        expect(this.pars.secondPar).to.equal(2);
+                        next();
+                    },
+                        function (next) {
+                        console.log("++++++++++++++++++++ context 2 - before2");
+                        advanceCounter();
+                        expect(this.pars.firstPar).to.equal(1);
+                        expect(this.pars.secondPar).to.equal(2);
+                        next();
+                    }]
+                });
+
+                cup.pour("second test", function(){
+                    console.log("++++++++++++++++++++ context 2 - test");
+                    expect(advanceCounter()).to.equal(8);
+                });
+            });
+
+            after(function(){
+                 expect(counter).to.equal(10);
+            });
         });
     });
 });

@@ -1,13 +1,22 @@
 [![Coverage Status](https://coveralls.io/repos/yoavniran/mocha-stirrer/badge.svg?branch=master)](https://coveralls.io/r/yoavniran/mocha-stirrer?branch=master)
 [![Build Status](https://travis-ci.org/yoavniran/mocha-stirrer.svg?branch=master)](https://travis-ci.org/yoavniran/mocha-stirrer)
+[![npm version](https://badge.fury.io/js/mocha-stirrer.svg)](http://badge.fury.io/js/mocha-stirrer)
 [![Dependencies](https://david-dm.org/yoavniran/mocha-stirrer.svg)]((https://david-dm.org/yoavniran/mocha-stirrer.svg))
 [![devDependency Status](https://david-dm.org/yoavniran/mocha-stirrer/dev-status.svg)](https://david-dm.org/yoavniran/mocha-stirrer#info=devDependencies)
 [![Codacy Badge](https://www.codacy.com/project/badge/12374261d28a40a5b05054d5b78c783b)](https://www.codacy.com/app/yoavniran/mocha-stirrer)
 [![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)](http://gruntjs.com/)
 
+* [Introduction](#introSection)
+* [Example](#firstExampleSection)
+* [API](#apiSection)
+* [Require Mocker](#requireMockerSection)
+* [Stirring](#stirringSection)
+
+<a name="introSection">
 # Mocha Stirrer
 
-**_Easily mock and set up tests for Mocha and Sinon_**
+
+**_Easily mock and set up tests for Mocha and Sinon then test, then reuse_**
 
 A useful utility for using sinon in a friendlier way that allows you to describe the objects and functions you wish
  to spy/stub/mock. Stirrer gives you a way to declare your setup upfront and re-use it between tests so you can write
@@ -24,6 +33,7 @@ or as part of the stirrer functionality. Read more about it [below](#requireMock
 
 ___
 
+<a name="firstExampleSection"/>
 ## Example
 
 Below is a full example showing how Stirrer can be used to set up ([grind](#grindSection)) a test and then run a test ([pour](#pourSection)))
@@ -84,7 +94,7 @@ Jump [here](#docsSection) for the full API documentation
 
 ___
 
-<a name="docsSection"/>
+<a name="apiSection"/>
 ## Stirrer API
 
 <a name="grindSection"/>
@@ -97,7 +107,9 @@ Creates a **[Cup](#cupSection)**  instance.
 _conf_ is an object that configures the cup instance. The following properties can be passed in:
 
 * `name` - (optional) any string that will be used for naming mocha hooks
-* `pars` - (optional) object map or function that returns an object map. Used to pass parameters in that are stored and can be used between tests
+
+* `pars` - (optional) object map or function that returns an object map. Makes it easy to use values between tests
+
 * `spies` - (optional) object map or function returning an object map. Used to create [sinon spies](http://sinonjs.org/docs/#spies-api),
 					each entry in the object map can be one of the following:
 
@@ -298,12 +310,8 @@ behaviors on its stubs easily.
 
 Mocker will stub all of the module's dependencies by default. You can pass a list of modules you don't wish Mocker to stub.
 
-###
+<a name="stirringSection"/>
+## Stirring
 
-```js
-
-  var a = {};
-```
-
-
-more soon...
+To understand this section you should have a good grip of the order of execution of things in Mocha in conjunction with its hooks.
+More details about stirring and order of calls

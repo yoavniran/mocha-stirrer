@@ -143,6 +143,7 @@ describe("utils tests", function () {
 
             utils.runSeriesAsync(series, function () {
                 expect(counter).to.equal(3);
+                expect(series).to.have.length(3);
                 done();
             }, context);
         });
