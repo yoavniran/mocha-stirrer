@@ -48,6 +48,7 @@
     "grunt-contrib-jshint": "^0.11.1",
     "grunt-coveralls": "^1.0.0",
     "grunt-mocha-test": "^0.12.7",
+    "grunt-release": "*",
     "mocha": "^2.2.1",
     "mocha-lcov-reporter": "0.0.2",
     "sinon": "*",

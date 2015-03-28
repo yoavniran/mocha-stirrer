@@ -8,6 +8,9 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks("grunt-mocha-test");
     grunt.loadNpmTasks("grunt-blanket");
     grunt.loadNpmTasks("grunt-coveralls");
+    grunt.loadNpmTasks("grunt-release");
+
+    grunt.task.renameTask("release", "releaseTask");
 
     grunt.initConfig({
         pkg: grunt.file.readJSON("package.json"),
@@ -78,7 +81,18 @@ module.exports = function (grunt) {
             sdcoverage: {
                 src: "./output/coverage.lcov.txt"
             }
+        },
+
+        releaseTask:{
+            options: {
+                github: {
+                    repo: "yoavniran/mocha-stirrer",
+                    usernameVar: "GRUNT_GH_USERNAME",
+                    passwordVar: "GRUNT_GH_PASSWORD"
+                }
+            }
         }
+
     });
 
     grunt.registerTask("test", ["mochaTest:test"]);
@@ -86,5 +100,7 @@ module.exports = function (grunt) {
     grunt.registerTask("coverage", ["clean", "blanket", "copy:test", "mochaTest:coverage", "mochaTest:htmlcov", "coveralls"]);
     grunt.registerTask("build", ["jshint", "test", "coverage", "mochaTest:travis-cov"]);
 
-    grunt.registerTask("default", ["jshint", "test"]); //, "localcov"]);
+    grunt.registerTask("default", ["jshint", "test"]);
+
+    grunt.registerTask("release", ["default", "releaseTask"])
 };
