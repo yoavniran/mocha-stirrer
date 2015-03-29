@@ -131,7 +131,9 @@ _conf_ is an object that configures the cup instance. The following properties c
 
 * `delay` - (optional, default: false) When true, cup instance will be created but not setup. meaning non of the fakes
  will be defined. [start](#cupStartSection) method must be called in order for setup to occur.
- see the [Stirring section](#stirringSection) for further details on the order of how things are set up and run
+ see the [Stirring section](#stirringSection) for further details on the order of how things are set up and run.
+ Note that you shouldn't use delay=true when also passing a test function as fakes wont be initialized.
+ setting `setupImmediate` to true overrides this parameters so delay will be ignored
 
 * `transform` - (optional) function receives the currently assigned parameters to the cup instance (cup.pars). If provided, transform
 will be run every time the cup setup logic is executed which, unless the setupImmediate flag is set to true, will be during the before
@@ -162,6 +164,7 @@ If left as false, the setup will happen during the first before or beforeEach ho
 after or afterEach hook
 
 * `requires` - (optional)
+> not implemented yet
 
 * `befores` - (optional)
 
@@ -276,6 +279,8 @@ If you want to use Mocha's '_it_' you can call pour like this:
 
 ### restir()
 
+leaves the configuration intact
+
 ### require(path, setupFn, options)
 
 ### name : String
@@ -316,7 +321,6 @@ You can define a setup function that will be called with the stubbed object as a
 behaviors on its stubs easily.
 
 Mocker will stub all of the module's dependencies by default. You can pass a list of modules you don't wish Mocker to stub.
-
 
 setup functions
 	- relative path to the mock-required module or the absolute path

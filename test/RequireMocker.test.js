@@ -25,7 +25,7 @@ describe("testing auto mocking for require", function () {
     describe("testing mock require", function () {    //wrapping in describe for the restir to clear the mock require
 
         var cup = stirrer.grind({
-            name:"RequireMocker.test - TEST #1"
+            name: "RequireMocker.test - TEST #1"
         });
 
         cup.pour("should mock require successfully", function (done) {
@@ -60,6 +60,39 @@ describe("testing auto mocking for require", function () {
         cup.pour("should mock require and setup stub successfully", function () {
 
             var foo = cup.require("./testObjects/foo", {
+                setup: {
+                    "./sub/bar": function (stub) {
+                        //set up the stub function to return a static string
+                        stub.prototype.useDep.returns("this works!");
+                    },
+                    "./sub/func": function (stub) {
+                        stub.returns("bla bla");
+                    }
+                }
+            });
+
+            expect(foo).to.exist();
+            expect(foo.bar()).to.equal("foo");
+            expect(foo.wat("a", "b")).to.not.exist(); //internally path should be stubbed and not set up to return anything
+            expect(foo.useSub()).to.not.exist();
+            expect(foo.useSubDep("world")).to.equal("this works!");
+            expect(foo.useFuncDep()).to.equal("bla bla");
+
+            var Bar = require("./testObjects/sub/bar");
+
+            expect(Bar.prototype.useDep).to.have.been.calledWith("world");
+        });
+    });
+
+    describe("testing mock require using stirrer method with stub setup", function () {
+
+        var cup = stirrer.grind({
+            name: "RequireMocker.test - TEST #2"
+        });
+
+        cup.pour("should mock require and setup stub successfully", function () {
+
+            var foo = stirrer.require(cup, "./testObjects/foo", {
                 setup: {
                     "./sub/bar": function (stub) {
                         //set up the stub function to return a static string
@@ -120,7 +153,6 @@ describe("testing auto mocking for require", function () {
     });
 
     describe("use stirrer cup with requires (mocker)", function () {
-
-        it("need to test");
+        it("need to implement & test");
     });
 });
