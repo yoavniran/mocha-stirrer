@@ -46,8 +46,8 @@ describe("stirrer tests", function () {
 
         describe("use stirrer simple", function () {
 
-            var foo = require("./foo");
-            var Bar = require("./sub/bar");
+            var foo = require("./testObjects/foo");
+            var Bar = require("./testObjects/sub/bar");
             var fs = require("fs");
             var path = require("path");
 
@@ -91,8 +91,8 @@ describe("stirrer tests", function () {
 
         describe("use stirrer cup with pars and transform", function () {
 
-            var foo = require("./foo");
-            var Bar = require("./sub/bar");
+            var foo = require("./testObjects/foo");
+            var Bar = require("./testObjects/sub/bar");
             var fs = require("fs");
             var path = require("path");
 
@@ -177,8 +177,8 @@ describe("stirrer tests", function () {
 
         describe("use stirrer cup with befores and afters config", function () {
 
-            var foo = require("./foo");
-            var Bar = require("./sub/bar");
+            var foo = require("./testObjects/foo");
+            var Bar = require("./testObjects/sub/bar");
 
             var cup = stirrer.grind({
                 name: "TEST #5",
@@ -204,12 +204,10 @@ describe("stirrer tests", function () {
             });
 
             describe("adding befores/afters after the cup was created", function () {
-
                 cup.pour("fakes setup should work as defined", function () {
                     expect(foo.barStats()).to.equal(cup.pars.getStatsResult);
                 });
             });
-
         });
 
         describe("use stirrer cup with immediate setup", function () {
@@ -220,8 +218,8 @@ describe("stirrer tests", function () {
         describe("use stirrer cup with test function", function () {
 
             var stirrer = require("../lib/stirrer");
-            var foo = require("./foo");
-            var Bar = require("./sub/bar");
+            var foo = require("./testObjects/foo");
+            var Bar = require("./testObjects/sub/bar");
 
             var counter = 0;
 
@@ -254,8 +252,8 @@ describe("stirrer tests", function () {
 
         describe("use stirrer cup with stubbed object and spied object", function () {
 
-            var foo = require("./foo");
-            var Bar = require("./sub/bar");
+            var foo = require("./testObjects/foo");
+            var Bar = require("./testObjects/sub/bar");
             var path = require("path");
 
             var cup = stirrer.grind({
@@ -284,18 +282,12 @@ describe("stirrer tests", function () {
             });
         });
 
-        describe("use stirrer cup with requires (mocker)", function () {
-
-
-        });
-
         describe("use stirrer dontRestir flag", function () {
-
+            it("need to test");
         });
 
         describe("use stirrer method aliases", function () {
-
-
+            it("need to test");
         });
     });
 });

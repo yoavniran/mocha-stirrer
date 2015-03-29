@@ -6,7 +6,7 @@ var chai = require("chai"),
 chai.use(dirtyChai);
 chai.use(sinonChai);
 
-describe("stirrer basicstests", function () {
+describe("stirrer basics tests", function () {
     "use strict";
 
     describe("test no mocha hooks - error", function () {
@@ -229,6 +229,28 @@ describe("stirrer basicstests", function () {
             expect(this.spies.emptySpy.calledOnce).to.be.true();
         });
 
+    });
+
+    describe("test transform not returning pars", function(){
+
+        var stirrer = require("../lib/stirrer");
+
+        var cup = stirrer.grind({
+            pars: {
+                "testPar": 1
+            },
+            transformForEach: true,
+            transform: function(pars){
+            }
+        });
+
+        cup.pour("oh oh pars should be undefined", function(){
+            expect(this.pars).to.be.undefined();
+        });
+
+        cup.pour("oh oh pars should still be undefined", function(){
+            expect(this.pars).to.be.undefined();
+        });
     });
 
     describe("test call order", function () {
@@ -495,18 +517,15 @@ describe("stirrer basicstests", function () {
                         "firstPar": 1
                     },
                     befores: function (next) {
-                        console.log("++++++++++++++++++++ context 1 - before");
                         advanceCounter();
                         next();
                     },
                     afters:[
                         function(next) {
-                            console.log("++++++++++++++++++++ context 1 - after1");
                             advanceCounter();
                             next();
                         },
                         function(next) {
-                            console.log("++++++++++++++++++++ context 1 - after2");
                             advanceCounter();
                             next();
                         }
@@ -514,7 +533,6 @@ describe("stirrer basicstests", function () {
                 });
 
                 cup.pour("first test",function(){
-                    console.log("++++++++++++++++++++ context 1 - test");
                     expect(advanceCounter()).to.equal(2);
                     expect(this.pars.firstPar).to.equal(1);
                     expect(this.pars.secondPar).to.be.undefined();
@@ -528,14 +546,12 @@ describe("stirrer basicstests", function () {
                         "secondPar": 2
                     },
                     befores:[ function (next) {
-                        console.log("++++++++++++++++++++ context 2 - before1");
                         advanceCounter();
                         expect(this.pars.firstPar).to.equal(1);
                         expect(this.pars.secondPar).to.equal(2);
                         next();
                     },
                         function (next) {
-                        console.log("++++++++++++++++++++ context 2 - before2");
                         advanceCounter();
                         expect(this.pars.firstPar).to.equal(1);
                         expect(this.pars.secondPar).to.equal(2);
@@ -544,7 +560,6 @@ describe("stirrer basicstests", function () {
                 });
 
                 cup.pour("second test", function(){
-                    console.log("++++++++++++++++++++ context 2 - test");
                     expect(advanceCounter()).to.equal(8);
                 });
             });

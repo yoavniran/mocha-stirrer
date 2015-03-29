@@ -310,6 +310,11 @@ behaviors on its stubs easily.
 
 Mocker will stub all of the module's dependencies by default. You can pass a list of modules you don't wish Mocker to stub.
 
+
+setup functions
+	- relative path to the mock-required module or the absolute path
+
+
 <a name="stirringSection"/>
 ## Stirring
 
