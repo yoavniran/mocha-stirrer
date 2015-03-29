@@ -6,7 +6,7 @@ var chai = require("chai"),
 chai.use(dirtyChai);
 chai.use(sinonChai);
 
-describe("stirrer basicstests", function () {
+describe("stirrer basics tests", function () {
     "use strict";
 
     describe("test no mocha hooks - error", function () {
@@ -108,17 +108,27 @@ describe("stirrer basicstests", function () {
         });
     });
 
+    describe("test unknown spy string (not empty)", function(){
+        //need to figure out how to test because error will be thrown async
+        it("need to test");
+    });
+
+    describe("test unknown stub string (not empty)", function(){
+        //need to figure out how to test because error will be thrown async
+        it("need to test");
+    });
+
     describe("test context and pars", function () {
 
         var stirrer = require("../lib/stirrer");
 
         var cup = stirrer.grind({
 
-            before: function (cupInst) {
-                expect(cupInst).to.equal(cup);
+            before: function () {
+                expect(this).to.equal(cup);
             },
-            after: function (cupInst) {
-                expect(cupInst).to.equal(cup);
+            after: function () {
+                expect(this).to.equal(cup);
             }
         });
 
@@ -231,6 +241,91 @@ describe("stirrer basicstests", function () {
 
     });
 
+    describe("test transform not returning pars", function(){
+
+        var stirrer = require("../lib/stirrer");
+
+        var cup = stirrer.grind({
+            pars: {
+                "testPar": 1
+            },
+            transformForEach: true,
+            transform: function(pars){
+            }
+        });
+
+        cup.pour("oh oh pars should be undefined", function(){
+            expect(this.pars).to.be.undefined();
+        });
+
+        cup.pour("oh oh pars should still be undefined", function(){
+            expect(this.pars).to.be.undefined();
+        });
+    });
+
+    describe("test dontRestir and then manual restir",  function(){
+
+        var testDontRestirCup;
+
+        describe("test context", function(){
+
+            var stirrer = require("../lib/stirrer");
+            var path = require("path");
+
+            testDontRestirCup = stirrer.grind({
+                name: "dont stir test",
+                dontRestir: true,
+                spies: {
+                    "pathJoin": [path, "join"]
+                },
+                after: function(){
+                    expect(testDontRestirCup.spies.pathJoin).to.have.been.calledOnce();
+                }
+            });
+
+            testDontRestirCup.pour("run simple test", function(){
+                expect(this.spies.pathJoin("a", "b")).to.equal("a/b");
+            });
+        });
+
+        after("fake should still be present", function(){
+            expect(testDontRestirCup.spies.pathJoin).to.exist();
+            testDontRestirCup.restir();
+            expect(testDontRestirCup.spies.pathJoin).to.not.exist();
+        });
+    });
+
+    describe("test dontRestir and then manual restir with stirrer method",  function(){
+
+        var testDontRestirCup;
+        var stirrer = require("../lib/stirrer");
+
+        describe("test context", function(){
+
+            var path = require("path");
+
+            testDontRestirCup = stirrer.grind({
+                name: "dont stir test",
+                dontRestir: true,
+                spies: {
+                    "pathJoin": [path, "join"]
+                },
+                after: function(){
+                    expect(testDontRestirCup.spies.pathJoin).to.have.been.calledOnce();
+                }
+            });
+
+            testDontRestirCup.pour("run simple test", function(){
+                expect(this.spies.pathJoin("a", "b")).to.equal("a/b");
+            });
+        });
+
+        after("fake should still be present", function(){
+            expect(testDontRestirCup.spies.pathJoin).to.exist();
+            stirrer.restir(testDontRestirCup);
+            expect(testDontRestirCup.spies.pathJoin).to.not.exist();
+        });
+    });
 
     describe("test call order", function () {
 
@@ -247,13 +342,13 @@ describe("stirrer basicstests", function () {
 
             var cup = stirrer.grind({
 
-                before: function (cupInst) {
-                    expect(cupInst).to.equal(cup);
+                before: function () {
+                    expect(this).to.equal(cup);
 
                     expect(advanceCounter()).to.equal(1);
                 },
-                after: function (cupInst) {
-                    expect(cupInst).to.equal(cup);
+                after: function () {
+                    expect(this).to.equal(cup);
                     expect(advanceCounter()).to.equal(3);
                 }
             });
@@ -275,13 +370,13 @@ describe("stirrer basicstests", function () {
 
             var cup = stirrer.grind({
 
-                before: function (cupInst) {
-                    expect(cupInst).to.equal(cup);
+                before: function () {
+                    expect(this).to.equal(cup);
 
                     expect(advanceCounter()).to.equal(1);
                 },
-                after: function (cupInst) {
-                    expect(cupInst).to.equal(cup);
+                after: function () {
+                    expect(this).to.equal(cup);
                     expect(advanceCounter()).to.equal(3);
                 }
             });
@@ -345,7 +440,6 @@ describe("stirrer basicstests", function () {
 
                 cup.pour("test #2", function () {
                     expect(advanceCounter()).to.equal(5);
-                    //done();
                 });
             });
 
@@ -365,23 +459,23 @@ describe("stirrer basicstests", function () {
 
             var cup = stirrer.grind({
 
-                before: function (cupInst, done) {
-                    expect(cupInst).to.equal(cup);
+                before: function (done) {
+                    expect(this).to.equal(cup);
                     expect(advanceCounter()).to.equal(1);
                     done();
                 },
-                beforeEach: function (cupInst, done) {
-                    expect(cupInst).to.equal(cup);
+                beforeEach: function (done) {
+                    expect(this).to.equal(cup);
                     expect(advanceCounter()).to.equal(2);
                     done();
                 },
-                after: function (cupInst, done) {
-                    expect(cupInst).to.equal(cup);
+                after: function ( done) {
+                    expect(this).to.equal(cup);
                     expect(advanceCounter()).to.equal(5);
                     done();
                 },
-                afterEach: function (cupInst, done) {
-                    expect(cupInst).to.equal(cup);
+                afterEach: function (done) {
+                    expect(this).to.equal(cup);
                     expect(advanceCounter()).to.equal(4);
                     done();
                 }
@@ -478,6 +572,75 @@ describe("stirrer basicstests", function () {
                 expect(counter).to.equal(1);
             });
 
+        });
+
+        describe("test correct order with stirring in befores in different context", function () {
+            var counter = 0;
+
+            function advanceCounter() {
+                counter += 1;
+                return counter;
+            }
+
+            var cup = stirrer.grind();
+
+            describe("first context", function () {
+
+                cup.stir({
+                    pars: {
+                        "firstPar": 1
+                    },
+                    befores: function (next) {
+                        advanceCounter();
+                        next();
+                    },
+                    afters:[
+                        function(next) {
+                            advanceCounter();
+                            next();
+                        },
+                        function(next) {
+                            advanceCounter();
+                            next();
+                        }
+                    ]
+                });
+
+                cup.pour("first test",function(){
+                    expect(advanceCounter()).to.equal(2);
+                    expect(this.pars.firstPar).to.equal(1);
+                    expect(this.pars.secondPar).to.be.undefined();
+                });
+            });
+
+            describe("second context", function () {
+
+                cup.stir({ //can stir again and add to any existing pars/befores/afters
+                    pars: {
+                        "secondPar": 2
+                    },
+                    befores:[ function (next) {
+                        advanceCounter();
+                        expect(this.pars.firstPar).to.equal(1);
+                        expect(this.pars.secondPar).to.equal(2);
+                        next();
+                    },
+                        function (next) {
+                        advanceCounter();
+                        expect(this.pars.firstPar).to.equal(1);
+                        expect(this.pars.secondPar).to.equal(2);
+                        next();
+                    }]
+                });
+
+                cup.pour("second test", function(){
+                    expect(advanceCounter()).to.equal(8);
+                });
+            });
+
+            after(function(){
+                 expect(counter).to.equal(10);
+            });
         });
     });
 });

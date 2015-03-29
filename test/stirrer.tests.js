@@ -2,6 +2,7 @@
 
 require("./utils.test");
 require("./stirrer.basics.test");
+require("./stirrer.delay.test");
 require("./stirrer.test");
 require("./RequireMocker.test");
 require("./RequireMocker.standalone.test");

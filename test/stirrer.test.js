@@ -46,8 +46,8 @@ describe("stirrer tests", function () {
 
         describe("use stirrer simple", function () {
 
-            var foo = require("./foo");
-            var Bar = require("./sub/bar");
+            var foo = require("./testObjects/foo");
+            var Bar = require("./testObjects/sub/bar");
             var fs = require("fs");
             var path = require("path");
 
@@ -62,13 +62,13 @@ describe("stirrer tests", function () {
                 mocks: {
                     "fs": fs
                 },
-                before: function (cup) {
+                before: function () {
                     cup.stubs.barGetStats.returns("stats!");
                     cup.mocks.fs.expects("readdir").once().callsArgWithAsync(1, "oh no!");
                 },
                 after: function () {
-                    expect(cup.stubs.barGetStats.calledOnce).to.be.true();
-                    expect(cup.spies.pathJoin.calledOnce).to.be.true();
+                    expect(this.stubs.barGetStats.calledOnce).to.be.true();
+                    expect(this.spies.pathJoin.calledOnce).to.be.true();
                 }
             });
 
@@ -91,8 +91,8 @@ describe("stirrer tests", function () {
 
         describe("use stirrer cup with pars and transform", function () {
 
-            var foo = require("./foo");
-            var Bar = require("./sub/bar");
+            var foo = require("./testObjects/foo");
+            var Bar = require("./testObjects/sub/bar");
             var fs = require("fs");
             var path = require("path");
 
@@ -122,18 +122,18 @@ describe("stirrer tests", function () {
                 mocks: {
                     "fs": fs
                 },
-                before: function (cup) {
-                    cup.stubs.barGetStats.returns(cup.pars.getStatsResult);
+                before: function () {
+                    this.stubs.barGetStats.returns(cup.pars.getStatsResult);
                 },
-                beforeEach: function (cup) {
-                    cup.mocks.fs.expects("readdir").once().callsArgWithAsync(1, cup.pars.readdirErr, cup.pars.readdirData);
+                beforeEach: function () {
+                    this.mocks.fs.expects("readdir").once().callsArgWithAsync(1, cup.pars.readdirErr, cup.pars.readdirData);
                 },
                 after: function () {
-                    expect(cup.stubs.barGetStats.calledTwice).to.be.true();
-                    expect(cup.spies.pathJoin.calledTwice).to.be.true();
+                    expect(this.stubs.barGetStats.calledTwice).to.be.true();
+                    expect(this.spies.pathJoin.calledTwice).to.be.true();
                 },
                 afterEach: function () {
-
+                    expect(this).to.equal(cup);
                 }
             });
 
@@ -177,8 +177,8 @@ describe("stirrer tests", function () {
 
         describe("use stirrer cup with befores and afters config", function () {
 
-            var foo = require("./foo");
-            var Bar = require("./sub/bar");
+            var foo = require("./testObjects/foo");
+            var Bar = require("./testObjects/sub/bar");
 
             var cup = stirrer.grind({
                 name: "TEST #5",
@@ -204,12 +204,10 @@ describe("stirrer tests", function () {
             });
 
             describe("adding befores/afters after the cup was created", function () {
-
                 cup.pour("fakes setup should work as defined", function () {
                     expect(foo.barStats()).to.equal(cup.pars.getStatsResult);
                 });
             });
-
         });
 
         describe("use stirrer cup with immediate setup", function () {
@@ -220,8 +218,8 @@ describe("stirrer tests", function () {
         describe("use stirrer cup with test function", function () {
 
             var stirrer = require("../lib/stirrer");
-            var foo = require("./foo");
-            var Bar = require("./sub/bar");
+            var foo = require("./testObjects/foo");
+            var Bar = require("./testObjects/sub/bar");
 
             var counter = 0;
 
@@ -229,11 +227,11 @@ describe("stirrer tests", function () {
                     stubs: {
                         "barGetStats": [Bar.prototype, "getStats"]
                     },
-                    before: function (cup) {
+                    before: function () {
                         cup.stubs.barGetStats.returns("stats!");
                     },
                     after: function () {
-                        expect(cup.stubs.barGetStats.calledOnce).to.be.true();
+                        expect(this.stubs.barGetStats.calledOnce).to.be.true();
                     }
                 },
                 function (done) {
@@ -254,8 +252,8 @@ describe("stirrer tests", function () {
 
         describe("use stirrer cup with stubbed object and spied object", function () {
 
-            var foo = require("./foo");
-            var Bar = require("./sub/bar");
+            var foo = require("./testObjects/foo");
+            var Bar = require("./testObjects/sub/bar");
             var path = require("path");
 
             var cup = stirrer.grind({
@@ -266,15 +264,16 @@ describe("stirrer tests", function () {
                 spies: {
                     "pathJoin": path.join
                 },
-                before: function (cup) {
+                before: function () {
                     cup.stubs.bar.getStats.returns("stats!");
                 },
                 after: function () {
-                    expect(cup.stubs.bar.getStats.calledOnce).to.be.true();
+                    expect(cup.stubs.bar.getStats).to.have.been.calledOnce();
+                    expect(cup.spies.pathJoin).to.have.been.calledOnce();
                 }
             });
 
-            cup.pour("test faked objects", function(){
+            cup.pour("test faked objects", function () {
 
                 var stats = foo.barStats();
                 expect(stats).to.equal("stats!");
@@ -284,18 +283,91 @@ describe("stirrer tests", function () {
             });
         });
 
-        describe("use stirrer cup with requires (mocker)", function () {
-
-
-        });
-
-        describe("use stirrer dontRestir flag", function () {
-
-        });
-
         describe("use stirrer method aliases", function () {
 
+            describe("use test alias for pour", function () {
 
+                var counter = 0;
+
+                var cup = stirrer.grind({
+                    after: function () {
+                        expect(counter).to.equal(2);
+                    }
+                });
+
+                cup.test("using test alias should work the same as pour", function () {
+                    counter += 1;
+                });
+
+                cup.test.wrap("using test alias with wrap should work the same", function () {
+                    it("internal test inside test alias with wrap", function () {
+                        counter += 1;
+                    });
+                });
+            });
+
+            describe("use create alias for grind", function(){
+
+                var path = require("path");
+
+                var cup = stirrer.create({
+                    spies: {
+                        "pathJoin": path.join
+                    },
+                    after: function () {
+                        expect(cup.spies.pathJoin).to.have.been.calledOnce();
+                    }
+                });
+
+                cup.pour("test create alias", function () {
+                    var joined = this.spies.pathJoin("1", "2");
+                    expect(joined).to.equal("1/2");
+                });
+            });
+
+            describe("use reset alias for restir on cup", function(){
+
+                var path = require("path");
+
+                var cup = stirrer.create({
+                    spies: {
+                        "pathJoin": path.join
+                    },
+                    after: function () {
+                        expect(cup.spies.pathJoin).to.have.been.calledOnce();
+
+                        cup.reset();
+                        expect(cup.spies.pathJoin).to.be.undefined();
+                    }
+                });
+
+                cup.pour("test create alias", function () {
+                    var joined = this.spies.pathJoin("1", "2");
+                    expect(joined).to.equal("1/2");
+                });
+            });
+
+            describe("use reset alias for restir on stirrer", function(){
+
+                var path = require("path");
+
+                var cup = stirrer.create({
+                    spies: {
+                        "pathJoin": path.join
+                    },
+                    after: function () {
+                        expect(cup.spies.pathJoin).to.have.been.calledOnce();
+
+                        stirrer.reset(cup);
+                        expect(cup.spies.pathJoin).to.be.undefined();
+                    }
+                });
+
+                cup.pour("test create alias", function () {
+                    var joined = this.spies.pathJoin("1", "2");
+                    expect(joined).to.equal("1/2");
+                });
+            });
         });
     });
 });

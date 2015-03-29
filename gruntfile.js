@@ -83,7 +83,7 @@ module.exports = function (grunt) {
             }
         },
 
-        releaseTask:{
+        releaseTask: {
             options: {
                 github: {
                     repo: "yoavniran/mocha-stirrer",

@@ -83,7 +83,10 @@ describe("utils tests", function () {
 
     describe("test isAsync", function () {
 
-        it("should be true for function with more than 1 args", function () {
+        it("should be true for function with more than 0 args", function () {
+
+            expect(utils.isAsync(function (a) {
+            })).to.be.true();
 
             var asyncFn = function (a, b) {
             };
@@ -94,10 +97,8 @@ describe("utils tests", function () {
             })).to.be.true();
         });
 
-        it("should be false for any other function", function () {
+        it("should be false no-pars functions", function () {
 
-            expect(utils.isAsync(function (a) {
-            })).to.not.be.ok();
             expect(utils.isAsync(function () {
             })).to.not.be.ok();
         });
@@ -143,6 +144,7 @@ describe("utils tests", function () {
 
             utils.runSeriesAsync(series, function () {
                 expect(counter).to.equal(3);
+                expect(series).to.have.length(3);
                 done();
             }, context);
         });

@@ -12,7 +12,7 @@ describe("testing auto mocking for require", function () {
 
     it("requiring the module should normally should work normally", function () {
 
-        var foo = require("./foo");
+        var foo = require("./testObjects/foo");
 
         expect(foo).to.exist();
         expect(foo.bar()).to.equal("foo");
@@ -25,12 +25,12 @@ describe("testing auto mocking for require", function () {
     describe("testing mock require", function () {    //wrapping in describe for the restir to clear the mock require
 
         var cup = stirrer.grind({
-            name:"RequireMocker.test - TEST #1"
+            name: "RequireMocker.test - TEST #1"
         });
 
         cup.pour("should mock require successfully", function (done) {
 
-            var foo = cup.require("./foo", {
+            var foo = cup.require("./testObjects/foo", {
                 dontStub: ["fs"]
             });
 
@@ -41,7 +41,7 @@ describe("testing auto mocking for require", function () {
             expect(foo.useSubDep("world")).to.not.exist();
             expect(foo.useFuncDep()).to.not.exist();
 
-            var Bar = require("./sub/bar");
+            var Bar = require("./testObjects/sub/bar");
 
             expect(Bar.prototype.useDep).to.have.been.calledWith("world");
 
@@ -59,7 +59,7 @@ describe("testing auto mocking for require", function () {
 
         cup.pour("should mock require and setup stub successfully", function () {
 
-            var foo = cup.require("./foo", {
+            var foo = cup.require("./testObjects/foo", {
                 setup: {
                     "./sub/bar": function (stub) {
                         //set up the stub function to return a static string
@@ -78,7 +78,40 @@ describe("testing auto mocking for require", function () {
             expect(foo.useSubDep("world")).to.equal("this works!");
             expect(foo.useFuncDep()).to.equal("bla bla");
 
-            var Bar = require("./sub/bar");
+            var Bar = require("./testObjects/sub/bar");
+
+            expect(Bar.prototype.useDep).to.have.been.calledWith("world");
+        });
+    });
+
+    describe("testing mock require using stirrer method with stub setup", function () {
+
+        var cup = stirrer.grind({
+            name: "RequireMocker.test - TEST #2"
+        });
+
+        cup.pour("should mock require and setup stub successfully", function () {
+
+            var foo = stirrer.require(cup, "./testObjects/foo", {
+                setup: {
+                    "./sub/bar": function (stub) {
+                        //set up the stub function to return a static string
+                        stub.prototype.useDep.returns("this works!");
+                    },
+                    "./sub/func": function (stub) {
+                        stub.returns("bla bla");
+                    }
+                }
+            });
+
+            expect(foo).to.exist();
+            expect(foo.bar()).to.equal("foo");
+            expect(foo.wat("a", "b")).to.not.exist(); //internally path should be stubbed and not set up to return anything
+            expect(foo.useSub()).to.not.exist();
+            expect(foo.useSubDep("world")).to.equal("this works!");
+            expect(foo.useFuncDep()).to.equal("bla bla");
+
+            var Bar = require("./testObjects/sub/bar");
 
             expect(Bar.prototype.useDep).to.have.been.calledWith("world");
         });
@@ -86,7 +119,7 @@ describe("testing auto mocking for require", function () {
 
     it("requiring the same module normally again should now work normally still", function () {
 
-        var foo = require("./foo");
+        var foo = require("./testObjects/foo");
 
         expect(foo).to.exist();
         expect(foo.bar()).to.equal("foo");
@@ -98,7 +131,7 @@ describe("testing auto mocking for require", function () {
 
     it("requiring a module that was a stub in previous should now work normally - not stubbed", function () {
 
-        var Bar = require("./sub/bar");
+        var Bar = require("./testObjects/sub/bar");
         var bar = new Bar();
         expect(bar.start()).to.equal("hello world");
         expect(bar.getStats()).to.exist();
@@ -118,5 +151,8 @@ describe("testing auto mocking for require", function () {
         var resolved = path.resolve("/");
         expect(resolved).to.equal("/");
     });
-});
 
+    describe("use stirrer cup with requires (mocker)", function () {
+        it("need to implement & test");
+    });
+});
