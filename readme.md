@@ -98,12 +98,13 @@ ___
 ## Stirrer API
 
 <a name="grindSection"/>
-### grind(conf, testFn)
+### grind([conf](#stirrerGrindConfParSection), [testFn](#stirrerGrindtestFnParSection))
 
 > Alias: create
 
 Creates a **[Cup](#cupSection)**  instance.
 
+<a name="stirrerGrindConfParSection"/>
 _conf_ is an object that configures the cup instance. The following properties can be passed in:
 
 * `name` - (optional) any string that will be used for naming mocha hooks
@@ -127,6 +128,10 @@ _conf_ is an object that configures the cup instance. The following properties c
 
 * `mocks` - (optional) object map or function returning an object map. Used to create [sinon mocks](http://sinonjs.org/docs/#mocks-api),
 				each entry in the object map should be an object reference
+
+* `delay` - (optional, default: false) When true, cup instance will be created but not setup. meaning non of the fakes
+ will be defined. [start](#cupStartSection) method must be called in order for setup to occur.
+ see the [Stirring section](#stirringSection) for further details on the order of how things are set up and run
 
 * `transform` - (optional) function receives the currently assigned parameters to the cup instance (cup.pars). If provided, transform
 will be run every time the cup setup logic is executed which, unless the setupImmediate flag is set to true, will be during the before
@@ -162,6 +167,7 @@ after or afterEach hook
 
 * `afters` - (optional)
 
+<a name="stirrerGrindtestFnParSection"/>
 _testFn_
 
 A test function to be run immediately with the cup object. Provides a shortcut to calling _pour(...)_ on the cup object.
@@ -265,7 +271,8 @@ If you want to use Mocha's '_it_' you can call pour like this:
 
 ```
 
-
+<a name="cupStartSection"/>
+### start()
 
 ### restir()
 
