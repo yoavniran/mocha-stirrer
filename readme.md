@@ -215,7 +215,7 @@ ___
 
 
 <a name="pourSection"/>
-###pour
+### pour
 > Alias: test
 
 the Pour method mimics Mocha's '_it_' function and supports it's different flavors:

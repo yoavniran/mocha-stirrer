@@ -78,7 +78,7 @@ module.exports = function (grunt) {
                 // coveralls.io is down). Optional, defaults to false.
                 force: true
             },
-            sdcoverage: {
+            stirrerCoverage: {
                 src: "./output/coverage.lcov.txt"
             }
         },

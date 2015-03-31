@@ -108,14 +108,62 @@ describe("stirrer basics tests", function () {
         });
     });
 
-    describe("test unknown spy string (not empty)", function(){
-        //need to figure out how to test because error will be thrown async
-        it("need to test");
-    });
+    describe("test unknown spy or stub string (not empty)", function () {
 
-    describe("test unknown stub string (not empty)", function(){
-        //need to figure out how to test because error will be thrown async
-        it("need to test");
+        var stirrer = require("../lib/stirrer");
+        var counter = 0;
+        var cup, cup2;
+        var orgBefore = global.before;
+
+        before(function () {
+            global.before = function (name, fn) {
+
+                if (typeof(name) === "function") {
+                    fn = name;
+                }
+
+                try {
+                    fn();
+                }
+                catch (ex) {
+                    expect(ex.message).to.contain("stirrer - unknown");
+                    counter += 1;
+                }
+            };    //overriding the mocha before just for these tests
+
+            cup.start();
+            cup2.start();
+        });
+
+        describe("test unknown spy string (not empty)", function () {
+
+            cup = stirrer.grind({
+                delay: true,
+                spies: {
+                    "failSpy": "something"
+                }
+            });
+
+            cup.pour("unknown spy string should fail", function () {
+            });
+        });
+
+        describe("test unknown stub string (not empty)", function () {
+            cup2 = stirrer.grind({
+                delay: true,
+                stubs: {
+                    "failStub": "something"
+                }
+            });
+
+            cup2.pour("unknown stub string should fail", function () {
+            });
+        });
+
+        after(function () {
+            global.before = orgBefore;
+            expect(counter).to.equal(2); //should have gotten two errors on unknown spy/stub types
+        });
     });
 
     describe("test context and pars", function () {
@@ -241,7 +289,7 @@ describe("stirrer basics tests", function () {
 
     });
 
-    describe("test transform not returning pars", function(){
+    describe("test transform not returning pars", function () {
 
         var stirrer = require("../lib/stirrer");
 
@@ -250,24 +298,24 @@ describe("stirrer basics tests", function () {
                 "testPar": 1
             },
             transformForEach: true,
-            transform: function(pars){
+            transform: function (pars) {
             }
         });
 
-        cup.pour("oh oh pars should be undefined", function(){
+        cup.pour("oh oh pars should be undefined", function () {
             expect(this.pars).to.be.undefined();
         });
 
-        cup.pour("oh oh pars should still be undefined", function(){
+        cup.pour("oh oh pars should still be undefined", function () {
             expect(this.pars).to.be.undefined();
         });
     });
 
-    describe("test dontRestir and then manual restir",  function(){
+    describe("test dontRestir and then manual restir", function () {
 
         var testDontRestirCup;
 
-        describe("test context", function(){
+        describe("test context", function () {
 
             var stirrer = require("../lib/stirrer");
             var path = require("path");
@@ -278,29 +326,29 @@ describe("stirrer basics tests", function () {
                 spies: {
                     "pathJoin": [path, "join"]
                 },
-                after: function(){
+                after: function () {
                     expect(testDontRestirCup.spies.pathJoin).to.have.been.calledOnce();
                 }
             });
 
-            testDontRestirCup.pour("run simple test", function(){
+            testDontRestirCup.pour("run simple test", function () {
                 expect(this.spies.pathJoin("a", "b")).to.equal("a/b");
             });
         });
 
-        after("fake should still be present", function(){
+        after("fake should still be present", function () {
             expect(testDontRestirCup.spies.pathJoin).to.exist();
             testDontRestirCup.restir();
             expect(testDontRestirCup.spies.pathJoin).to.not.exist();
         });
     });
 
-    describe("test dontRestir and then manual restir with stirrer method",  function(){
+    describe("test dontRestir and then manual restir with stirrer method", function () {
 
         var testDontRestirCup;
         var stirrer = require("../lib/stirrer");
 
-        describe("test context", function(){
+        describe("test context", function () {
 
             var path = require("path");
 
@@ -310,17 +358,17 @@ describe("stirrer basics tests", function () {
                 spies: {
                     "pathJoin": [path, "join"]
                 },
-                after: function(){
+                after: function () {
                     expect(testDontRestirCup.spies.pathJoin).to.have.been.calledOnce();
                 }
             });
 
-            testDontRestirCup.pour("run simple test", function(){
+            testDontRestirCup.pour("run simple test", function () {
                 expect(this.spies.pathJoin("a", "b")).to.equal("a/b");
             });
         });
 
-        after("fake should still be present", function(){
+        after("fake should still be present", function () {
             expect(testDontRestirCup.spies.pathJoin).to.exist();
             stirrer.restir(testDontRestirCup);
             expect(testDontRestirCup.spies.pathJoin).to.not.exist();
@@ -469,7 +517,7 @@ describe("stirrer basics tests", function () {
                     expect(advanceCounter()).to.equal(2);
                     done();
                 },
-                after: function ( done) {
+                after: function (done) {
                     expect(this).to.equal(cup);
                     expect(advanceCounter()).to.equal(5);
                     done();
@@ -574,6 +622,45 @@ describe("stirrer basics tests", function () {
 
         });
 
+        describe("test correct order with only", function () {
+
+            var counter = 0;
+
+            var cup = stirrer.grind({
+                beforeEach: function () {
+                    counter += 1;
+                },
+                afterEach: function () {
+                    counter += 1;
+                },
+                after: function () {
+                    counter += 1;
+                }
+            });
+
+            it("pour.only should be reached", function(realDone){
+                cup._it = {
+                    only: function (name, fn) {
+                        function done(){
+                            realDone();
+                        }
+
+                        console.log("reached the only fake");
+                        fn(done);
+                    }
+                };
+
+                cup.pour.only("testing only with overridden it.only should work", function () {
+                    counter += 1;
+                });
+            });
+
+            after("returning it.only", function () {
+                //global.it.only = itOnlyOrg;
+                expect(counter).to.equal(4);
+            });
+        });
+
         describe("test correct order with stirring in befores in different context", function () {
             var counter = 0;
 
@@ -594,19 +681,19 @@ describe("stirrer basics tests", function () {
                         advanceCounter();
                         next();
                     },
-                    afters:[
-                        function(next) {
+                    afters: [
+                        function (next) {
                             advanceCounter();
                             next();
                         },
-                        function(next) {
+                        function (next) {
                             advanceCounter();
                             next();
                         }
                     ]
                 });
 
-                cup.pour("first test",function(){
+                cup.pour("first test", function () {
                     expect(advanceCounter()).to.equal(2);
                     expect(this.pars.firstPar).to.equal(1);
                     expect(this.pars.secondPar).to.be.undefined();
@@ -619,27 +706,27 @@ describe("stirrer basics tests", function () {
                     pars: {
                         "secondPar": 2
                     },
-                    befores:[ function (next) {
+                    befores: [function (next) {
                         advanceCounter();
                         expect(this.pars.firstPar).to.equal(1);
                         expect(this.pars.secondPar).to.equal(2);
                         next();
                     },
                         function (next) {
-                        advanceCounter();
-                        expect(this.pars.firstPar).to.equal(1);
-                        expect(this.pars.secondPar).to.equal(2);
-                        next();
-                    }]
+                            advanceCounter();
+                            expect(this.pars.firstPar).to.equal(1);
+                            expect(this.pars.secondPar).to.equal(2);
+                            next();
+                        }]
                 });
 
-                cup.pour("second test", function(){
+                cup.pour("second test", function () {
                     expect(advanceCounter()).to.equal(8);
                 });
             });
 
-            after(function(){
-                 expect(counter).to.equal(10);
+            after(function () {
+                expect(counter).to.equal(10);
             });
         });
     });
