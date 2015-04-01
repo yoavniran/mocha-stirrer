@@ -2,8 +2,7 @@
 
 require("./utils.test");
 require("./cupStirrer.test");
-//require("./cupBlender.test");
-//require("./pourer.test");
+require("./pourer.test");
 require("./stirrer.basics.test");
 require("./stirrer.delay.test");
 require("./stirrer.test");
