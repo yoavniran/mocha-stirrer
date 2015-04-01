@@ -317,5 +317,75 @@ describe("utils tests", function () {
             }).to.throw();
         });
     });
+
+    describe("test merge", function () {
+
+        it("should merge from obj1 to obj2, not affecting obj1", function () {
+
+            var obj1 = {prop1: "test", prop2: "bla"};
+            var obj2 = {prop3: "132", prop4: 123};
+
+            var result = utils.merge(obj1, obj2);
+
+            expect(result).to.equal(obj2);
+            expect(obj1).to.have.all.keys(["prop1", "prop2"]);
+            expect(obj2).to.have.all.keys(["prop1", "prop2", "prop3", "prop4"]);
+        });
+
+        it("should merge from obj1 to undefined", function () {
+
+            var obj2 = {prop3: "132", prop4: 123};
+
+            var result = utils.merge(obj2);
+
+            expect(result).to.exist();
+            expect(obj2).to.have.all.keys(["prop3", "prop4"]);
+        });
+
+        it("should merge only functions when passing the flag, no functions", function () {
+
+            var obj2 = {prop3: "132", prop4: 123};
+
+            var result = utils.merge(obj2, {}, true);
+
+            expect(result).to.exist();
+            expect(result).to.be.empty();
+        });
+
+        it("should merge only functions when passing the flag", function () {
+
+            var obj2 = {
+                prop3: "132", prop4: 123, foo: function () {
+                }
+            };
+
+            var result = utils.merge(obj2, {}, true);
+
+            expect(result).to.exist();
+            expect(result).to.have.keys("foo");
+            expect(result.foo).to.be.a("function");
+        });
+
+        it("should return a new object if dest is undefined", function () {
+
+            var obj1 = {prop1: "test", prop2: "bla"};
+            var result = utils.merge(obj1, undefined);
+
+            expect((result !== obj1)).to.be.ok();
+            expect(result).to.have.all.keys(["prop1", "prop2"]);
+        });
+
+        it("should not affect destination if src is undefined", function () {
+
+            var obj1 = {prop1: "test", prop2: "bla"};
+
+            var result = utils.merge(undefined, obj1);
+
+            expect(result).to.be.equal(obj1);
+
+            expect(result).to.have.all.keys(["prop1", "prop2"]);
+            expect(obj1).to.have.all.keys(["prop1", "prop2"]);
+        });
+    });
 });
 

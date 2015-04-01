@@ -1,6 +1,9 @@
 /* jshint strict: false */
 
 require("./utils.test");
+require("./cupStirrer.test");
+//require("./cupBlender.test");
+//require("./pourer.test");
 require("./stirrer.basics.test");
 require("./stirrer.delay.test");
 require("./stirrer.test");
@@ -16,7 +19,21 @@ require("./RequireMocker.standalone.test");
 //    done();
 //}
 //
-//describe("root", function(){
+//describe("root", function () {
+//
+//    before(function () {
+//
+//        console.log("this is before 1");
+//        before(function () {
+//            console.log("this is before 2");
+//        });
+//    });
+//
+//    it("test nested befores", function(){
+//       console.log("this is the test");
+//    });
+//
+//});
 //
 //    describe("context 1", function () {
 //

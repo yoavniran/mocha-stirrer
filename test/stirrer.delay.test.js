@@ -122,6 +122,6 @@ describe("stirrer delay tests", function () {
 
         after(function(){
             expect(counter).to.equal(1);
-        })
+        });
     });
 });

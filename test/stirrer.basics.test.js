@@ -116,7 +116,7 @@ describe("stirrer basics tests", function () {
         var orgBefore = global.before;
 
         before(function () {
-            global.before = function (name, fn) {
+            cup._before = cup2._before = function (name, fn) {
 
                 if (typeof(name) === "function") {
                     fn = name;
