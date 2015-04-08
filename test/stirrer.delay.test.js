@@ -3,9 +3,10 @@ var chai = require("chai"),
     expect = chai.expect,
     dirtyChai = require("dirty-chai"),
     sinonChai = require("sinon-chai"),
-    stirrer = require("../lib/stirrer"),
+    stirrer = require("../lib/index"),
     path = require("path"),
-    fs = require("fs");
+    fs = require("fs"),
+    testUtils = require("./testUtils");
 
 chai.use(dirtyChai);
 chai.use(sinonChai);
@@ -60,7 +61,7 @@ describe("stirrer delay tests", function () {
 
     describe("test setupImmediate overrides delay", function () {
 
-        before(function(){
+        before(function () {
             stirrer.grind({
                     delay: true,
                     setupImmediate: true,
@@ -95,33 +96,31 @@ describe("stirrer delay tests", function () {
 
     });
 
-    describe("test delay without start should fail", function(){
+    describe("test delay without start should fail", function () {
 
         var counter = 0;
 
         var cup = stirrer.grind({
             name: "never started cup",
-            delay:true
+            delay: true
         });
 
-        it("expect an error when pour test is executed", function(realDone){
-            cup._it = function(name, fn){ //overriding the it mocha function with a custom one for testing purposes
+        it("expect an error when pour test is executed", function (realDone) {
 
-                function done(err){
-                    expect(err).to.be.an.instanceof(Error);
-                    counter = 1;
-                    realDone();
-                }
+            cup._mocha = {it : testUtils.getFunctionRunner(function (err) {  //overriding the mocha it  function with a custom one for testing purposes
 
-                fn(done);
-            };
+                expect(err).to.be.an.instanceof(Error);
+                counter = 1;
+                realDone();
+            })};
 
-            cup.pour("should fail because cup not started", function(){
+
+            cup.pour("should fail because cup not started", function () {
             });
         });
 
-        after(function(){
-            expect(counter).to.equal(1);
+        after(function () {
+            expect(counter).to.equal(1);//make sure test was executed as expected
         });
     });
 });

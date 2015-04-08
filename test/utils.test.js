@@ -387,5 +387,31 @@ describe("utils tests", function () {
             expect(obj1).to.have.all.keys(["prop1", "prop2"]);
         });
     });
+
+    describe("test leveled name", function () {
+
+        it("should create levels successfully", function () {
+
+            var levels = utils.getLeveledFileName("./test/testObjects/foo.js", 2);
+
+            expect(levels).to.exist();
+            expect(levels).to.have.length(2);
+
+            expect(levels[0]).to.equal("testObjects/foo");
+            expect(levels[1]).to.equal("test/testObjects/foo");
+        });
+
+        it("should create levels successfully with default level 3 ", function () {
+
+            var levels = utils.getLeveledFileName("./test/testObjects/foo.js");
+
+            expect(levels).to.exist();
+            expect(levels).to.have.length(3);
+
+            expect(levels[0]).to.equal("testObjects/foo");
+            expect(levels[1]).to.equal("test/testObjects/foo");
+            expect(levels[2]).to.equal("mocha-stirrer/test/testObjects/foo");
+        });
+    });
 });
 

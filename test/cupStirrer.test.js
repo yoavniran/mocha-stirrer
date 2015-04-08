@@ -1,9 +1,11 @@
 var chai = require("chai"),
     expect = chai.expect,
+    sinon = require("sinon"),
     dirtyChai = require("dirty-chai"),
     sinonChai = require("sinon-chai"),
     CupStirrer = require("../lib/CupStirrer"),
-    stirrer = require("../lib/stirrer");
+    stirrer = require("../lib/index"),
+    testUtils = require("./testUtils");
 
 chai.use(dirtyChai);
 chai.use(sinonChai);
@@ -11,28 +13,29 @@ chai.use(sinonChai);
 describe("cupStirrer tests", function () {
     "use strict";
 
-    var cStirrer = new CupStirrer();
-
     function getNewTestCup(pars) {
 
-        return {
+        return testUtils.mockCupsMochaFunctions({
             name: "test cup",
             _befores: [pars.beforeInitElm],
             _afters: [pars.afterInitElm],
             pars: {
                 "test": pars.parInitElmValue
             },
-            _before: function (name, fn) {
-                if (typeof name === "function") {
-                    fn = name;
-                }
-
-                fn();
-            }
-        };
+            required: {}
+        });
     }
 
-    var cup = stirrer.grind({
+    it("stir should cope with empty conf object", function () {
+
+        var testCup = getNewTestCup({});
+
+        CupStirrer.prototype.stir.call(testCup, {});
+    });
+
+    var cStirrer = new CupStirrer();
+
+    var cup = stirrer.grind({  //this is cool! using mocha-stirrer to test itself :)
         pars: {
             beforeInitElm: "before",
             afterInitElm: "after",
@@ -80,5 +83,55 @@ describe("cupStirrer tests", function () {
         cup.pour("stir should cope with undefined as conf", function () {
             cStirrer.stir.call(cup.pars.testCup);
         });
+    });
+
+    describe("test stir with requires", function () {
+
+        var testCup = getNewTestCup({});
+        var requireRet = {foo: "yes"};
+
+        before(function () {
+            testCup.require = sinon.stub();
+            testCup.require.returns(requireRet)
+        });
+
+        it("require should be called and modules stored in required property", function () {
+
+            var reqOptions = {test: "foo"};
+
+            CupStirrer.prototype.stir.call(testCup, {
+                requires: function () {
+                    return [
+                        "./testObjects/foo",
+                        {path: "bar", options: reqOptions}
+                    ];
+                }
+            });
+
+            expect(testCup.require).to.have.been.calledTwice();
+            expect(testCup.required).to.not.be.empty();
+
+            expect(testCup.required).to.have.been.calledWith("./testObjects/foo");
+            expect(testCup.required).to.have.been.calledWith("bar", reqOptions);
+
+            expect(testCup.required["./testObjects/foo"]).to.equal(requireRet);
+            expect(testCup.required["bar"]).to.equal(requireRet);
+        });
+    });
+
+    describe("test stir with requires failing", function(){
+
+        var testCup = getNewTestCup({});
+
+        testCup._mocha.before = testUtils.getFunctionRunnerExpectsError();
+
+        CupStirrer.prototype.stir.call(testCup, {
+            requires: function () {
+                return [
+                    {path: "", options: {test: "foo"}}
+                ];
+            }
+        });
+
     });
 });

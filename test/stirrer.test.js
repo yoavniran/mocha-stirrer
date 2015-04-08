@@ -11,7 +11,7 @@ describe("stirrer tests", function () {
 
     describe("test grind with errors", function () {
 
-        var stirrer = require("../lib/stirrer");
+        var stirrer = require("../lib/index");
 
         it("should fail on string stub that isn't stirrer.EMPTY", function () {
 
@@ -42,7 +42,7 @@ describe("stirrer tests", function () {
 
     describe("use stirrer cup", function () {
 
-        var stirrer = require("../lib/stirrer");
+        var stirrer = require("../lib/index");
 
         describe("use stirrer simple", function () {
 
@@ -210,14 +210,9 @@ describe("stirrer tests", function () {
             });
         });
 
-        describe("use stirrer cup with immediate setup", function () {
-
-
-        });
-
         describe("use stirrer cup with test function", function () {
 
-            var stirrer = require("../lib/stirrer");
+            var stirrer = require("../lib/index");
             var foo = require("./testObjects/foo");
             var Bar = require("./testObjects/sub/bar");
 

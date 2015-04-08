@@ -2,7 +2,7 @@ var chai = require("chai"),
     expect = chai.expect,
     dirtyChai = require("dirty-chai"),
     sinonChai = require("sinon-chai"),
-    stirrer = require("../lib/stirrer");
+    stirrer = require("../lib/index");
 
 describe("testing auto mocking for require", function () {
     "use strict";
@@ -117,6 +117,80 @@ describe("testing auto mocking for require", function () {
         });
     });
 
+    describe("use stirrer cup with requires (mocker)", function () {
+
+        describe("pass requires in grind conf", function () {
+
+            var cup = stirrer.grind({
+                requires: [
+                    "./testObjects/foo"
+                ],
+                before: function () {
+                    this.getStub("sub/bar").prototype.useDep.returns("this works!");
+                }
+            });
+
+            cup.pour("fake require should be  set up correctly", function () {
+                var foo = cup.required["./testObjects/foo"];
+                expect(foo).to.exist();
+                expect(foo.useSubDep("")).to.equal("this works!");
+            });
+        });
+
+        describe("pass requires in grind conf with options", function () {
+
+            var cup = stirrer.grind({
+                requires: [{
+                    path: "./testObjects/foo",
+                    options: {
+                        setup: {
+                            "./sub/func": function (stub) {
+                                stub.returns("bla bla");
+                            }
+                        }
+                    }
+                }]
+            });
+
+            cup.pour("fake require should be  set up correctly with setup", function () {
+                var foo = cup.required["./testObjects/foo"];
+                expect(foo).to.exist();
+                expect(foo.useFuncDep()).to.equal("bla bla");
+            });
+        });
+
+        describe("pass requires to stir method", function(){
+
+            var cup = stirrer.grind();
+
+            cup.stir({
+                requires: [{
+                    path: "./testObjects/foo",
+                    options: {
+                        setup: {
+                            "./sub/func": function (stub) {
+                                stub.returns("bla bla");
+                            }
+                        }
+                    }
+                }],
+                pars: function(){
+                    return {
+                        "funcRetVal": "bla bla"
+                    };
+                }
+            });
+
+            cup.pour("fake require should be  set up correctly with setup", function () {
+                var foo = cup.required["./testObjects/foo"];
+                expect(foo).to.exist();
+                expect(foo.useFuncDep()).to.equal("bla bla");
+            });
+
+
+        });
+    });
+
     it("requiring the same module normally again should now work normally still", function () {
 
         var foo = require("./testObjects/foo");
@@ -152,7 +226,4 @@ describe("testing auto mocking for require", function () {
         expect(resolved).to.equal("/");
     });
 
-    describe("use stirrer cup with requires (mocker)", function () {
-        it("need to implement & test");
-    });
 });

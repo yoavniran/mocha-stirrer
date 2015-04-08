@@ -1,7 +1,8 @@
 var chai = require("chai"),
     expect = chai.expect,
     dirtyChai = require("dirty-chai"),
-    sinonChai = require("sinon-chai");
+    sinonChai = require("sinon-chai"),
+    testUtils = require("./testUtils");
 
 chai.use(dirtyChai);
 chai.use(sinonChai);
@@ -14,14 +15,14 @@ describe("stirrer basics tests", function () {
         it("stirrer should throw if a mocha hook method is not available - before", function () {
 
             var Module = require("module");
-            var stirrerPath = require.resolve("../lib/stirrer");
+            var stirrerPath = require.resolve("../lib/index");
             delete Module._cache[stirrerPath]; //need to make sure stirrer is re-required
 
             var beforeOrg = global.before; //get rid of the mocha before method
             global.before = null;
 
             expect(function () {
-                require("../lib/stirrer");
+                require("../lib/index");
             }).to.throw();
 
             global.before = beforeOrg;
@@ -30,14 +31,14 @@ describe("stirrer basics tests", function () {
         it("stirrer should throw if a mocha hook method is not available - after", function () {
 
             var Module = require("module");
-            var stirrerPath = require.resolve("../lib/stirrer");
+            var stirrerPath = require.resolve("../lib/index");
             delete Module._cache[stirrerPath]; //need to make sure stirrer is re-required
 
             var afterOrg = global.after; //get rid of the mocha before method
             global.after = null;
 
             expect(function () {
-                require("../lib/stirrer");
+                require("../lib/index");
             }).to.throw();
 
             global.after = afterOrg;
@@ -46,14 +47,14 @@ describe("stirrer basics tests", function () {
         it("stirrer should throw if a mocha hook method is not available - beforeEach", function () {
 
             var Module = require("module");
-            var stirrerPath = require.resolve("../lib/stirrer");
+            var stirrerPath = require.resolve("../lib/index");
             delete Module._cache[stirrerPath]; //need to make sure stirrer is re-required
 
             var beforeEachOrg = global.beforeEach; //get rid of the mocha before method
             global.beforeEach = null;
 
             expect(function () {
-                require("../lib/stirrer");
+                require("../lib/index");
             }).to.throw();
 
             global.beforeEach = beforeEachOrg;
@@ -62,14 +63,14 @@ describe("stirrer basics tests", function () {
         it("stirrer should throw if a mocha hook method is not available - afterEach", function () {
 
             var Module = require("module");
-            var stirrerPath = require.resolve("../lib/stirrer");
+            var stirrerPath = require.resolve("../lib/index");
             delete Module._cache[stirrerPath]; //need to make sure stirrer is re-required
 
             var afterEachOrg = global.afterEach; //get rid of the mocha before method
             global.afterEach = null;
 
             expect(function () {
-                require("../lib/stirrer");
+                require("../lib/index");
             }).to.throw();
 
             global.afterEach = afterEachOrg;
@@ -78,14 +79,14 @@ describe("stirrer basics tests", function () {
         it("stirrer should throw if a mocha test method is not available - it", function () {
 
             var Module = require("module");
-            var stirrerPath = require.resolve("../lib/stirrer");
+            var stirrerPath = require.resolve("../lib/index");
             delete Module._cache[stirrerPath]; //need to make sure stirrer is re-required
 
             var itOrg = global.it; //get rid of the mocha before method
             global.it = null;
 
             expect(function () {
-                require("../lib/stirrer");
+                require("../lib/index");
             }).to.throw();
 
             global.it = itOrg;
@@ -94,7 +95,7 @@ describe("stirrer basics tests", function () {
 
     describe("test no pars grind and pour", function () {
 
-        var stirrer = require("../lib/stirrer");
+        var stirrer = require("../lib/index");
         var cup = stirrer.grind();
 
         var counter = 0;
@@ -110,14 +111,16 @@ describe("stirrer basics tests", function () {
 
     describe("test unknown spy or stub string (not empty)", function () {
 
-        var stirrer = require("../lib/stirrer");
+        var stirrer = require("../lib/index");
         var counter = 0;
         var cup, cup2;
-        var orgBefore = global.before;
 
         before(function () {
-            cup._before = cup2._before = function (name, fn) {
 
+            cup = testUtils.mockCupsMochaFunctions(cup);
+            cup2 = testUtils.mockCupsMochaFunctions(cup2);
+
+            cup._mocha.before = cup2._mocha.before = function (name, fn) {
                 if (typeof(name) === "function") {
                     fn = name;
                 }
@@ -129,7 +132,7 @@ describe("stirrer basics tests", function () {
                     expect(ex.message).to.contain("stirrer - unknown");
                     counter += 1;
                 }
-            };    //overriding the mocha before just for these tests
+            };
 
             cup.start();
             cup2.start();
@@ -161,14 +164,13 @@ describe("stirrer basics tests", function () {
         });
 
         after(function () {
-            global.before = orgBefore;
             expect(counter).to.equal(2); //should have gotten two errors on unknown spy/stub types
         });
     });
 
     describe("test context and pars", function () {
 
-        var stirrer = require("../lib/stirrer");
+        var stirrer = require("../lib/index");
 
         var cup = stirrer.grind({
 
@@ -195,7 +197,7 @@ describe("stirrer basics tests", function () {
 
     describe("test pars and transform", function () {
 
-        var stirrer = require("../lib/stirrer");
+        var stirrer = require("../lib/index");
 
         var cup = stirrer.grind({
             pars: {
@@ -214,7 +216,7 @@ describe("stirrer basics tests", function () {
 
     describe("test pars and transform in multiple tests", function () {
 
-        var stirrer = require("../lib/stirrer");
+        var stirrer = require("../lib/index");
 
         var cup = stirrer.grind({
             pars: {
@@ -237,7 +239,7 @@ describe("stirrer basics tests", function () {
 
     describe("test pars and transform in multiple tests with transformForEach set to true", function () {
 
-        var stirrer = require("../lib/stirrer");
+        var stirrer = require("../lib/index");
 
         var cup = stirrer.grind({
             pars: {
@@ -261,7 +263,7 @@ describe("stirrer basics tests", function () {
 
     describe("test empty spy and stub", function () {
 
-        var stirrer = require("../lib/stirrer");
+        var stirrer = require("../lib/index");
 
         var cup = stirrer.grind({
 
@@ -291,7 +293,7 @@ describe("stirrer basics tests", function () {
 
     describe("test transform not returning pars", function () {
 
-        var stirrer = require("../lib/stirrer");
+        var stirrer = require("../lib/index");
 
         var cup = stirrer.grind({
             pars: {
@@ -317,7 +319,7 @@ describe("stirrer basics tests", function () {
 
         describe("test context", function () {
 
-            var stirrer = require("../lib/stirrer");
+            var stirrer = require("../lib/index");
             var path = require("path");
 
             testDontRestirCup = stirrer.grind({
@@ -346,7 +348,7 @@ describe("stirrer basics tests", function () {
     describe("test dontRestir and then manual restir with stirrer method", function () {
 
         var testDontRestirCup;
-        var stirrer = require("../lib/stirrer");
+        var stirrer = require("../lib/index");
 
         describe("test context", function () {
 
@@ -377,7 +379,7 @@ describe("stirrer basics tests", function () {
 
     describe("test call order", function () {
 
-        var stirrer = require("../lib/stirrer");
+        var stirrer = require("../lib/index");
 
         describe("test correct order of calls - simple", function () {
 
@@ -439,8 +441,7 @@ describe("stirrer basics tests", function () {
         });
 
         describe("test correct order of calls - with Each", function () {
-
-
+            it("need to test each");
         });
 
         describe("test correct order of calls - with async pour", function () {
@@ -638,15 +639,12 @@ describe("stirrer basics tests", function () {
                 }
             });
 
-            it("pour.only should be reached", function(realDone){
-                cup._it = {
-                    only: function (name, fn) {
-                        function done(){
+            it("pour.only should be reached", function (realDone) {
+                cup._mocha = {
+                    it: {
+                        only: testUtils.getFunctionRunner(function () {
                             realDone();
-                        }
-
-                        console.log("reached the only fake");
-                        fn(done);
+                        })
                     }
                 };
 
@@ -656,7 +654,6 @@ describe("stirrer basics tests", function () {
             });
 
             after("returning it.only", function () {
-                //global.it.only = itOnlyOrg;
                 expect(counter).to.equal(4);
             });
         });

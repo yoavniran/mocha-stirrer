@@ -3,8 +3,7 @@ var chai = require("chai"),
     dirtyChai = require("dirty-chai"),
     sinonChai = require("sinon-chai"),
     sinon = require("sinon"),
-    stirrer = require("../lib/stirrer"),
-    Mocker = stirrer.RequireMocker;
+    Mocker = require("../lib/index").RequireMocker;
 
 describe("testing auto mocking for require with standalone mocker", function () {
     "use strict";

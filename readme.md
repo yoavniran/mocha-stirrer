@@ -255,7 +255,7 @@ If your test function runs asynchronous code then just like with Mocha, you have
 	cup.pour("my test", function(done){
 		//this will make Mocha run your test function exclusively
 
-		done(); //make sure tal call done so Mocha doesnt timeout
+		done(); //make sure to call done so Mocha doesnt timeout
 	});
 
 ```
@@ -279,15 +279,27 @@ If you want to use Mocha's '_it_' you can call pour like this:
 
 ### restir()
 
+> Alias: reset
+
 leaves the configuration intact
 
+
 ### require(path, setupFn, options)
+
+### getStub(name)
 
 ### name : String
 
 ### sb : Sinon.Sandbox
 
 ### pars : Object
+
+### stubs : Object
+
+### mocks : Object
+
+### spies : Object
+
 
 Calling grind on stirrer creates an instance of _cup_. You can reuse a cup instance between tests easily using the _pour_ method.
 

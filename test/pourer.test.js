@@ -2,7 +2,8 @@ var chai = require("chai"),
     expect = chai.expect,
     dirtyChai = require("dirty-chai"),
     sinonChai = require("sinon-chai"),
-    pourer = require("../lib/pourer");
+    pourer = require("../lib/pourer"),
+    testUtils = require("./testUtils");
 
 chai.use(dirtyChai);
 chai.use(sinonChai);
@@ -30,12 +31,13 @@ describe("pourer tests", function () {
                     next();
                 }
             ],
-            _it: function (name, fn) {
-                function done() {
-                }
-
-                fn(done);
-            }
+            _mocha: {it: testUtils.getFunctionRunner()  }
+            //    function (name, fn) {
+            //    function done() {
+            //    }
+            //
+            //    fn(done);
+            //}
         };
 
         it("pour should be executed successfully", function () {
