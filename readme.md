@@ -6,6 +6,8 @@
 [![Codacy Badge](https://www.codacy.com/project/badge/12374261d28a40a5b05054d5b78c783b)](https://www.codacy.com/app/yoavniran/mocha-stirrer)
 [![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)](http://gruntjs.com/)
 
+> **This document is still a work in progress with several sections still missing. I'm on it!**
+
 * [Introduction](#introSection)
 * [Example](#firstExampleSection)
 * [API](#apiSection)
@@ -18,13 +20,13 @@
 
 **_Easily mock and set up tests for Mocha and Sinon then test, then reuse_**
 
-A useful utility for using sinon in a friendlier way that allows you to describe the objects and functions you wish
+A useful utility for testing with mocha and sinon in a friendlier way that allows you to describe the objects and functions you wish
  to spy/stub/mock. Stirrer gives you a way to declare your setup upfront and re-use it between tests so you can write
  them once and then run every test.
 
 A big benefit of Stirrer is that the set up of mocks is made easier and the cleanup is taken care of for you.
 
-The aim of this utility is to allow you to write as little as set up code as possible focusing on the test cases themselves.
+The aim of this tool is to allow you to write as little as set up code as possible focusing on the test cases themselves.
 
 The **[`RequireMocker`](#requireMockerSection)** that is part of this package is a strong tool that can be used on its own
 or as part of the stirrer functionality. Read more about it [below](#requireMockerSection).
@@ -36,7 +38,7 @@ ___
 <a name="firstExampleSection"/>
 ## Example
 
-Below is a full example showing how Stirrer can be used to set up ([grind](#grindSection)) a test and then run a test ([pour](#pourSection)))
+Below is an example showing how Stirrer can be used to set up ([grind](#grindSection)) a test and then run a test ([pour](#pourSection)))
  using the fakes set up and verification defined:
 
 Jump [here](#docsSection) for the full API documentation
@@ -102,7 +104,9 @@ ___
 
 > Alias: create
 
-Creates a **[Cup](#cupSection)**  instance.
+Creates a new **[Cup](#cupSection)**  instance.
+
+A cup can be used between tests
 
 <a name="stirrerGrindConfParSection"/>
 _conf_ is an object that configures the cup instance. The following properties can be passed in:
@@ -129,8 +133,8 @@ _conf_ is an object that configures the cup instance. The following properties c
 * `mocks` - (optional) object map or function returning an object map. Used to create [sinon mocks](http://sinonjs.org/docs/#mocks-api),
 				each entry in the object map should be an object reference
 
-* `delay` - (optional, default: false) When true, cup instance will be created but not setup. meaning non of the fakes
- will be defined. [start](#cupStartSection) method must be called in order for setup to occur.
+* `delay` - (optional, default: false) When true, cup instance will be created but not set up. meaning non of the fakes
+ will be defined. The [start](#cupStartSection) method must be called in order for setup to occur.
  see the [Stirring section](#stirringSection) for further details on the order of how things are set up and run.
  Note that you shouldn't use delay=true when also passing a test function as fakes wont be initialized.
  setting `setupImmediate` to true overrides this parameters so delay will be ignored
@@ -140,16 +144,24 @@ will be run every time the cup setup logic is executed which, unless the setupIm
  or beforeEach hook
 
 * `before` - (optional) a function that will be called before ([mocha hooks](http://mochajs.org/#hooks)) tests are run within a describe/context block
-receives a reference to the cup (first argument) and a reference to the done callback. Very similarly to Mocha, if you define a
-second parameter Stirrer will assume you need it and you will have to call _done();_ in your method or your test will fail
+receives a reference to the cup as the context (this) and a reference to the done callback as a parameter. Very similarly to Mocha, if you define a
+the parameter Stirrer will assume you need it and you will have to call _done();_ in your method or your test will fail
 with a timeout error
 
-* `after` - (optional)  a function that will be called after ([mocha hooks](http://mochajs.org/#hooks)) tests ran within a describe/context block
-receives a reference to the cup (first argument) and a reference to the done callback. Very similarly to Mocha, if you define a
-second parameter Stirrer will assume you need it and you will have to call _done();_ in your method or your test will fail
+* `after` - (optional) a function that will be called after ([mocha hooks](http://mochajs.org/#hooks)) tests ran within a describe/context block
+receives a reference to the cup as the context (this) and a reference to the done callback as a parameter. Very similarly to Mocha, if you define a
+the parameter Stirrer will assume you need it and you will have to call _done();_ in your method or your test will fail
 with a timeout error
 
-* `beforeEach` - (optional)
+* `beforeEach` - (optional) a function that will be called before ([mocha hooks](http://mochajs.org/#hooks)) each test within a describe/context block
+receives a reference to the cup as the context (this) and a reference to the done callback as a parameter. Very similarly to Mocha, if you define a
+the parameter Stirrer will assume you need it and you will have to call _done();_ in your method or your test will fail
+with a timeout error
+
+* `afterEach` - (optional) a function that will be called after ([mocha hooks](http://mochajs.org/#hooks)) each test within a describe/context block
+receives a reference to the cup as the context (this) and a reference to the done callback as a parameter. Very similarly to Mocha, if you define a
+the parameter Stirrer will assume you need it and you will have to call _done();_ in your method or your test will fail
+with a timeout error
 
 * `sandbox` - (optional) an object with properties to configure the internal [sinon sandbox](http://sinonjs.org/docs/#sandbox) object Stirrer creates.
 
@@ -161,14 +173,29 @@ Also, the setup logic will only be executed once - this is good for a standalone
 If left as false, the setup will happen during the first before or beforeEach hook prior to a test being executed.
 
 * `dontRestir` - (optional, default: false) (see [restir](#restirSection)) will prevent the cup from being "restirred" (reset) in the
-after or afterEach hook
+after hook. This means that when the mocha context(describe) finishes, non of the fakes will be restored so you will need to do the restoring manually.
 
 * `requires` - (optional)
-> not implemented yet
+ requires is either an array or a function (returning array). Each element in the array should either be:
 
-* `befores` - (optional)
+1) string with the path of the module to require
+
+2) an object: {path: "", options: {}) - options is optional
+
+This will fake require the modules according to the provided path and make them available on the 'required' property of the cup. Additional requires can be passed into the `cup`
+using its [stir](#cupStirMethodSection) method
+
+* `befores` - (optional) Can either be a function or an array of functions. The signature of these functions is: fn(next). `next` is a function that must be called otherwise tests will not run.
+Each of the registered methods will be executed in sequence right before a test(pour) is run.
+
+Additional befores can be passed into the `cup` using its [stir](#cupStirMethodSection) method.
+Any registered before functions are removed when the cup is [restirred](#restirSection) (reset)
 
 * `afters` - (optional)
+Additional afters can be passed into the `cup` using its [stir](#cupStirMethodSection) method
+
+Any registered afters functions are removed when the cup is [restirred](#restirSection) (reset)
+
 
 <a name="stirrerGrindtestFnParSection"/>
 _testFn_
@@ -181,9 +208,19 @@ A test function to be run immediately with the cup object. Provides a shortcut t
 
 > Alias: reset
 
-### require(cup)
+Clears the cup's fakes(spies/stubs/mocks) and restores them using the internal sinon sandbox object.
+All registered afters/befores are removed together with all references to spies/stubs/mocks and stub aliases.
+
+The cup's restir method is called internally automatically when the mocha context/describe ends in which the grind method was called or if delay was used,
+from the ending context in which [start](#cupStartSection) was called. See the [Stirring section](#stirringSection) below for a more detailed explanation.
+
+
+### require(cup, requirePath, options)
+
 
 ### Mocker
+
+
 
 ### EMPTY
 
@@ -198,7 +235,7 @@ ___
 
     var cup = stirrer.grind({});
 ```
-
+<a name="cupStirMethodSection"/>
 ### stir(conf)
 
 
@@ -213,10 +250,15 @@ ___
              	in an array or if its a single method, each method receives a '_next_' function reference as a parameter which it must call.
              	Failing to call next() will cause timeouts as the flow will not progress
 
+    `requires` -
+
 
 <a name="pourSection"/>
-### pour
+### pour(name, fn)
 > Alias: test
+
+* `name` - (mandatory) name for the test
+* `fn` - (optional) function to be executed as the test
 
 the Pour method mimics Mocha's '_it_' function and supports it's different flavors:
 
@@ -260,7 +302,7 @@ If your test function runs asynchronous code then just like with Mocha, you have
 
 ```
 
-If you want to use Mocha's '_it_' you can call pour like this:
+If you want to use Mocha's '_it_' on your own you can call pour like this:
 
 ```js
 
@@ -277,14 +319,70 @@ If you want to use Mocha's '_it_' you can call pour like this:
 <a name="cupStartSection"/>
 ### start()
 
+If delay=true was used when grinding the cup then you will need to manually start the cup by calling this method.
+This will initialize the cup. A good time to use delay and manual start is when you have the cup grinding code at the top of a module
+or in a shared util class. Then you wouldn't want the cup to be started immediately but rather in the right context/describe.
+
+```js
+
+	//we may define a cup at the top of our test module with the delay flag, like this:
+
+    var delayedCup = stirrer.grind({
+        name: "delayed cup test",
+        delay: true,   //cup will not be started immediately
+        spies: {
+            "pathSpy": [path, "join"]
+        },
+        stubs: {
+            "readdirSyncStub": [fs, "readdir"]
+        },
+        pars: {
+            readErr: "oh no!"
+        },
+        before: function () {
+            this.stubs.readdirSyncStub.callsArgWithAsync(1, this.pars.readErr);
+        },
+        after: function () {
+            expect(this.spies.pathSpy).to.have.been.called();
+            expect(this.stubs.readdirSyncStub).to.have.been.called();
+        }
+    });
+
+    //then when in the right context we can start the cup, like this:
+
+    describe("start causes cup fakes to be initialized on demand", function () {
+
+        delayedCup.start(); //on demand start
+
+        delayedCup.pour("fakes should not be initialized", function (done) {
+
+            var result = this.spies.pathSpy("a", "b");
+            expect(result).to.equal("a/b");
+
+            this.stubs.readdirSyncStub("bla", function (err) {
+                expect(err).to.equal(delayedCup.pars.readErr);
+                done();
+            });
+        });
+    });
+
+```
+
+
 ### restir()
 
 > Alias: reset
 
-leaves the configuration intact
+see the [restir global method details](#restirSection)
 
 
-### require(path, setupFn, options)
+<a name="cupRequireSection"/>
+### require(reqPath, options)
+
+* `requirePath` - the module to require. Use the same path as you would use for a normal require. so relative to the current module
+* `options` - see the options details in the RequireMocker section, [require method details](#requireMockerRequireSection)
+_The default context for the setup methods (if you use them) will be the cup instance. To change it simply pass a different setupContext_
+
 
 ### getStub(name)
 
@@ -300,6 +398,8 @@ leaves the configuration intact
 
 ### spies : Object
 
+### required : Object
+
 
 Calling grind on stirrer creates an instance of _cup_. You can reuse a cup instance between tests easily using the _pour_ method.
 
@@ -310,12 +410,7 @@ Calling grind on stirrer creates an instance of _cup_. You can reuse a cup insta
 
 	describe("my test", function(){
 
-		cup.pour(function(){
-
-			it("should do something", function(){
-
-
-			});
+		cup.pour("should do something", function(){
 		});
 	});
 
@@ -329,6 +424,36 @@ Calling grind on stirrer creates an instance of _cup_. You can reuse a cup insta
 The Mocker lets you require a module using a simple call and it will stub out all of its dependencies (as best it could).
 This way you don't need to stub everything yourself but let the magic happen for you.
 
+A typical use of the Mocker is through the [cup.require](#cupRequireSection) method. However,
+it is possible to use it directly by using the _RequireMocker_ property of mocha-stirrer.
+
+Here's an example (taken from this [test module](https://github.com/yoavniran/mocha-stirrer/blob/master/test/RequireMocker.standalone.test.js)) -
+
+```js
+
+	Mocker = require("mocha-stirrer").RequireMocker;
+
+	var mocker = new Mocker(sinon);  //pass sinon or a sinon sandbox to the mocker
+
+	var foo = mocker.require("./testObjects/foo", {
+            dontStub: ["fs"]
+        });
+
+    expect(foo).to.exist();
+    expect(foo.bar()).to.equal("foo");
+    expect(foo.wat("a", "b")).to.not.exist(); //internally path should be stubbed and not set up to return anything
+    expect(foo.useSub()).to.not.exist();
+    expect(foo.useSubDep("world")).to.not.exist();
+    expect(foo.useFuncDep()).to.not.exist();
+
+    var Bar = require("./testObjects/sub/bar");
+
+    expect(Bar.prototype.useDep).to.have.been.calledWith("world");
+
+    mocker.restore(); //make sure to clean up by restoring the stubs
+
+```
+
 You can define a setup function that will be called with the stubbed object as an argument, then you will be able to define
 behaviors on its stubs easily.
 
@@ -338,8 +463,20 @@ setup functions
 	- relative path to the mock-required module or the absolute path
 
 
+<a name="requireMockerRequireSection"/>
+### require(parent, requirePath, options)
+
+* `parent` - the parent module that is making the mock require - this is normally the test module
+* `requirePath` - the module to require, relative to the test module (parent)
+* `options` - additional setup options
+                   - dontStub: an array of paths that are required by the module or by its dependencies (defined by `requirePath`) to not stub
+                   - setup: object map containing the require path of stubbed dependency and a matching function. the function signature is: fn(stub)
+                   - setupContext: the context to pass into the setup method(s)
+
+
 <a name="stirringSection"/>
 ## Stirring
 
-To understand this section you should have a good grip of the order of execution of things in Mocha in conjunction with its hooks.
-More details about stirring and order of calls
+Internally, the mocha hooks (mainly the `before` hook) are used extensively to set up the fakes and your own befores/afters/etc.
+To use Mocha-Stirrer successfully you should have a good grip of the order of execution of things in Mocha in conjunction with its hooks.
+

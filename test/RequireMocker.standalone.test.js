@@ -44,7 +44,7 @@ describe("testing auto mocking for require with standalone mocker", function () 
 
             expect(Bar.prototype.useDep).to.have.been.calledWith("world");
 
-            mocker.restore();
+            mocker.restore();   //make sure to clean up by restoring the stubs
         });
     });
 

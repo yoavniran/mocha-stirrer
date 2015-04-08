@@ -47,7 +47,7 @@ describe("stirrer delay tests", function () {
 
         delayedCup.start();
 
-        delayedCup.pour("fakes should not be initialized", function (done) {
+        delayedCup.pour("fakes should be initialized", function (done) {
 
             var result = this.spies.pathSpy("a", "b");
             expect(result).to.equal("a/b");

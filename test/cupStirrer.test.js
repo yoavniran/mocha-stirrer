@@ -92,7 +92,7 @@ describe("cupStirrer tests", function () {
 
         before(function () {
             testCup.require = sinon.stub();
-            testCup.require.returns(requireRet)
+            testCup.require.returns(requireRet);
         });
 
         it("require should be called and modules stored in required property", function () {
@@ -115,7 +115,7 @@ describe("cupStirrer tests", function () {
             expect(testCup.required).to.have.been.calledWith("bar", reqOptions);
 
             expect(testCup.required["./testObjects/foo"]).to.equal(requireRet);
-            expect(testCup.required["bar"]).to.equal(requireRet);
+            expect(testCup.required.bar).to.equal(requireRet);
         });
     });
 
