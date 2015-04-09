@@ -134,8 +134,8 @@ describe("stirrer basics tests", function () {
                 }
             };
 
-            cup.start();
-            cup2.start();
+            cup.brew();
+            cup2.start();  //start is alias to brew
         });
 
         describe("test unknown spy string (not empty)", function () {

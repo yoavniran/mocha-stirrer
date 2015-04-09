@@ -45,5 +45,36 @@ describe("cupBlender tests", function () {
             cup.restir();
         });
     });
+
+    describe("test mock require using requires in stir", function(){
+
+        var cup= cupBlender.blend(testUtils.getMockBlendConfig());
+
+        it("should fake require module and enrich cup with stubs by stirring in requires ", function () {
+
+            cup.stir({
+               requires: ["./testObjects/foo"]
+            });
+
+            var fakeFoo = cup.required["./testObjects/foo"];
+
+            expect(fakeFoo).to.exist();
+            expect(fakeFoo).to.respondTo("bar");
+
+            expect(cup.stubs).to.exist();
+            expect(cup.stubs).to.include.keys(["path", "fs"]);
+
+            expect(cup.getStub("sub/func")).to.exist();
+            expect(cup.getStub("testObjects/sub/func")).to.exist();
+            expect(cup.getStub("sub/func")).to.equal(cup.getStub("testObjects/sub/func"));
+
+            expect(cup.getStub("sub/bar")).to.exist();
+        });
+
+        after(function () {
+            cup.restir();
+        });
+
+    });
 });
 

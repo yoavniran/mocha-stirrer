@@ -38,7 +38,7 @@ ___
 <a name="firstExampleSection"/>
 ## Example
 
-Below is an example showing how Stirrer can be used to set up ([grind](#grindSection)) a test and then run a test ([pour](#pourSection)))
+Below is an example showing how Stirrer can be used to set up ([grind](#grindSection)) a test and then run a test ([pour](#pourSection))
  using the fakes set up and verification defined:
 
 Jump [here](#docsSection) for the full API documentation
@@ -113,7 +113,7 @@ _conf_ is an object that configures the cup instance. The following properties c
 
 * `name` - (optional) any string that will be used for naming mocha hooks
 
-* `pars` - (optional) object map or function that returns an object map. Makes it easy to use values between tests
+* `pars` - (optional) object map (key/val) or function that returns an object map. Makes it easy to use values between tests
 
 * `spies` - (optional) object map or function returning an object map. Used to create [sinon spies](http://sinonjs.org/docs/#spies-api),
 					each entry in the object map can be one of the following:
@@ -178,22 +178,19 @@ after hook. This means that when the mocha context(describe) finishes, non of th
 * `requires` - (optional)
  requires is either an array or a function (returning array). Each element in the array should either be:
 
-1) string with the path of the module to require
+	1) string with the path of the module to require
+	2) an object: {path: "", options: {}) - options is optional (for options details see [below](#requireMockerRequireOptions))
 
-2) an object: {path: "", options: {}) - options is optional
-
-This will fake require the modules according to the provided path and make them available on the 'required' property of the cup. Additional requires can be passed into the `cup`
-using its [stir](#cupStirMethodSection) method
+	This will fake require the modules according to the provided path and make them available on the 'required' property of the cup. 	 Additional requires can be passed into the `cup` using its [stir](#cupStirMethodSection) method.
 
 * `befores` - (optional) Can either be a function or an array of functions. The signature of these functions is: fn(next). `next` is a function that must be called otherwise tests will not run.
 Each of the registered methods will be executed in sequence right before a test(pour) is run.
-
 Additional befores can be passed into the `cup` using its [stir](#cupStirMethodSection) method.
 Any registered before functions are removed when the cup is [restirred](#restirSection) (reset)
 
-* `afters` - (optional)
+* `afters` - (optional) Can either be a function or an array of functions. The signature of these functions is: fn(next). `next` is a function that must be called otherwise tests will not finish running.
+Each of the registered methods will be executed in sequence right after a test(pour) is run.
 Additional afters can be passed into the `cup` using its [stir](#cupStirMethodSection) method
-
 Any registered afters functions are removed when the cup is [restirred](#restirSection) (reset)
 
 
@@ -214,20 +211,46 @@ All registered afters/befores are removed together with all references to spies/
 The cup's restir method is called internally automatically when the mocha context/describe ends in which the grind method was called or if delay was used,
 from the ending context in which [start](#cupStartSection) was called. See the [Stirring section](#stirringSection) below for a more detailed explanation.
 
-
+<a name="requireSection">
 ### require(cup, requirePath, options)
 
+* `cup`- the cup instance to use as the sandbox and add the stubs to
+* `requirePath` - the module to require. Use the same path as you would use for a normal require. so relative to the current module
+* `options` - see the options details in the RequireMocker section, [require method details](#requireMockerRequireSection)
+_The default context for the setup methods (if you use them) will be the cup instance. To change it simply pass a different setupContext_
+### RequireMocker
 
-### Mocker
-
-
+This is the RequireMocker type discussed below. You can new it up and use it on its own. See the [section](requireMockerSection) below for details.
 
 ### EMPTY
+
+When grinding a new cup you can specify what you wish to stub or spy. In case you want an anonymous stub/spy ala "_**sinon.stub();**_" you can use this special property as the value of the stub or spy. This way:
+
+```js
+
+	var stirrer = require("mocha-stirrer");
+
+	var cup = stirrer.grind({
+            stubs: {
+                "emptyStub": stirrer.EMPTY //will create an anonymous stub
+            },
+            spies: {
+                "emptySpy": stirrer.EMPTY //will create an anonymous spy
+            },
+            before: function () {
+                cup.stubs.emptyStub.returns("foo"); //here we use our anonymous stub
+            }
+	});
+
+```
+
 
 ___
 
 <a name="cupSection" />
 ## The Cup
+
+A cup is created by calling the [grind](#grindSection) method:
 
 ```js
 
@@ -235,22 +258,40 @@ ___
 
     var cup = stirrer.grind({});
 ```
+
 <a name="cupStirMethodSection"/>
 ### stir(conf)
 
+Add information to the cup that can be used by following tests. the new information is added on top of any other data
+already passed using the grind method or previously calling stir.
 
-	`pars` -
+**conf** - object that can consist of any combination of the following properties:
 
-	`befores` - array of methods or a single method to be executed before each test. whether a series of before methods is passed
-	in an array or if its a single method, each method receives a '_next_' function reference as a parameter which it must call.
-	Failing to call next() will cause timeouts as the flow will not progress
+* `pars` -  object map (key/val) or function that returns an object map
+
+* `befores` - array of methods or a single method to be executed before each test. Each method passed receives a '_next_' function  reference as a parameter which it must call. Failing to call _next()_ will cause timeouts as the flow will not progress
+
+```js
+
+    var cup = stirrer.grind(...);
+
+    cup.stir({
+		befores: function (next) { //can pass one function or an array of functions
+                 //do something here
+				//...
+                        next(); //dont forget to call next
+                    }
+	});
+```
 
 
-	`afters` - array of methods or a single method to be executed after each test. whether a series of before methods is passed
-             	in an array or if its a single method, each method receives a '_next_' function reference as a parameter which it must call.
-             	Failing to call next() will cause timeouts as the flow will not progress
 
-    `requires` -
+* `afters` array of methods or a single method to be executed after each test. Each method receives a '_next_' function reference  as a parameter which it must call. Failing to call next() will cause timeouts as the flow will not progress.
+
+* `requires` -   array of elements or a function returning array of elements, each element in the array should either be:
+
+	* string with the path of the module to require or,
+	* an object: {path: "", options: {}) - options is optional
 
 
 <a name="pourSection"/>
@@ -317,7 +358,9 @@ If you want to use Mocha's '_it_' on your own you can call pour like this:
 ```
 
 <a name="cupStartSection"/>
-### start()
+### brew()
+
+> Alias: start
 
 If delay=true was used when grinding the cup then you will need to manually start the cup by calling this method.
 This will initialize the cup. A good time to use delay and manual start is when you have the cup grinding code at the top of a module
@@ -379,43 +422,51 @@ see the [restir global method details](#restirSection)
 <a name="cupRequireSection"/>
 ### require(reqPath, options)
 
-* `requirePath` - the module to require. Use the same path as you would use for a normal require. so relative to the current module
-* `options` - see the options details in the RequireMocker section, [require method details](#requireMockerRequireSection)
-_The default context for the setup methods (if you use them) will be the cup instance. To change it simply pass a different setupContext_
+see the [require global method details](#requireSection)
 
 
 ### getStub(name)
 
 ### name : String
 
+The name of the instance. can be passed initially to the grind method.
+
 ### sb : Sinon.Sandbox
+
+The instance of sinon sandbox used by the cup. This enables the cup restir method to restore all fakes created by the cup automatically.
 
 ### pars : Object
 
-### stubs : Object
-
-### mocks : Object
+All of the parameters (key/val) passed to the cup either during grinding or using the stir method
 
 ### spies : Object
 
+The spies created by the cup. Spies are created according to the map passed to the cup during the grinding
+
+### stubs : Object
+
+The stubs created by the cup. Stubs are created according to the map passed to the cup during the grinding
+
+### mocks : Object
+
+The mocks created by the cup. Mocks are created according to the map passed to the cup during the grinding
+
 ### required : Object
 
-
-Calling grind on stirrer creates an instance of _cup_. You can reuse a cup instance between tests easily using the _pour_ method.
-
+All of the modules (key/val) that were fake required (using the [Require Mocker]()) by passing requires either during grinding or the stir method
+The key used is the same one used to identify the module by its path.
 
 ```js
 
-	var cup = stirrer.grind({});
+			cup.stir({
+               requires: ["./testObjects/foo"] //define the module to fake require
+            });
 
-	describe("my test", function(){
-
-		cup.pour("should do something", function(){
-		});
-	});
+            cup.pour("should be able to test with my faked module", function(){
+            	var fakeFoo = cup.required["./testObjects/foo"]; //the module is now available using the required property of the cup
+			});
 
 ```
-
 
 
 <a name="requireMockerSection" />
@@ -430,7 +481,7 @@ it is possible to use it directly by using the _RequireMocker_ property of mocha
 Here's an example (taken from this [test module](https://github.com/yoavniran/mocha-stirrer/blob/master/test/RequireMocker.standalone.test.js)) -
 
 ```js
-
+ 
 	Mocker = require("mocha-stirrer").RequireMocker;
 
 	var mocker = new Mocker(sinon);  //pass sinon or a sinon sandbox to the mocker
@@ -468,6 +519,7 @@ setup functions
 
 * `parent` - the parent module that is making the mock require - this is normally the test module
 * `requirePath` - the module to require, relative to the test module (parent)
+<a name="requireMockerRequireOptions"/>
 * `options` - additional setup options
                    - dontStub: an array of paths that are required by the module or by its dependencies (defined by `requirePath`) to not stub
                    - setup: object map containing the require path of stubbed dependency and a matching function. the function signature is: fn(stub)
@@ -478,5 +530,6 @@ setup functions
 ## Stirring
 
 Internally, the mocha hooks (mainly the `before` hook) are used extensively to set up the fakes and your own befores/afters/etc.
-To use Mocha-Stirrer successfully you should have a good grip of the order of execution of things in Mocha in conjunction with its hooks.
+To use Mocha-Stirrer successfully you should have a good grip of the order of execution of things in Mocha in conjunction with its hooks...
 
+> this section isnt complete yet

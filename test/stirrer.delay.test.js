@@ -45,7 +45,7 @@ describe("stirrer delay tests", function () {
 
     describe("test start causes cup fakes to be initialized on demand", function () {
 
-        delayedCup.start();
+        delayedCup.brew();
 
         delayedCup.pour("fakes should be initialized", function (done) {
 
