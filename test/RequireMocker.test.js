@@ -123,17 +123,18 @@ describe("testing auto mocking for require", function () {
 
             var cup = stirrer.grind({
                 requires: [
-                    "./testObjects/foo"
+                    "./testObjects/foo"  //foo will be fake required
                 ],
                 before: function () {
-                    this.getStub("sub/bar").prototype.useDep.returns("this works!");
+                    this.getStub("sub/bar").prototype.useDep.returns("this works!"); //foo depends on bar.js and we get to it using alias: "sub/bar"
                 }
             });
 
             cup.pour("fake require should be  set up correctly", function () {
-                var foo = cup.required["./testObjects/foo"];
+
+                var foo = this.required["./testObjects/foo"];  //we can get to foo using the required property
                 expect(foo).to.exist();
-                expect(foo.useSubDep("")).to.equal("this works!");
+                expect(foo.useSubDep("")).to.equal("this works!");  //stub returns what we told it to return
             });
         });
 

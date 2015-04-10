@@ -118,17 +118,17 @@ _conf_ is an object that configures the cup instance. The following properties c
 * `spies` - (optional) object map or function returning an object map. Used to create [sinon spies](http://sinonjs.org/docs/#spies-api),
 					each entry in the object map can be one of the following:
 
-					1. An array with 2 the first element referencing an object, second is the property name
-                    2. A function to spy
-                    3. A special EMPTY string (_stirrer.EMPTY_) to receive an anonymous spy
+	1. An array with 2 the first element referencing an object, second is the property name
+	2. A function to spy
+	3. A special EMPTY string (_stirrer.EMPTY_) to receive an anonymous spy
 
 * `stubs` - (optional) object map or function returning an object map. Used to create [sinon stubs](http://sinonjs.org/docs/#stubs-api),
                     each entry in the object map can be one of the following:
 
-                    1. An array with 2 or 3 elements, the first element referencing an object, second is the property name
+	1. An array with 2 or 3 elements, the first element referencing an object, second is the property name
                     and the third and optional is a function. See sinon API for details
-                    2. An object to be stubbed by sinon
-                    3. A special EMPTY string (_stirrer.EMPTY_) to receive an empty stub
+	2. An object to be stubbed by sinon
+	3. A special EMPTY string (_stirrer.EMPTY_) to receive an empty stub
 
 * `mocks` - (optional) object map or function returning an object map. Used to create [sinon mocks](http://sinonjs.org/docs/#mocks-api),
 				each entry in the object map should be an object reference
@@ -427,6 +427,66 @@ see the [require global method details](#requireSection)
 
 ### getStub(name)
 
+* `name`- is the way to identify the stub you wish to get.
+
+Normally, you declare objects to stub using the grind method. The key you use is the name that will be used to store the stub on the cup instance. so if you did:
+
+```js
+
+	var cup = stirrer.grind({
+		stubs: {
+			myStub: someObj.someFn
+		}
+	});
+
+```
+
+then you will be able to access the stub by using: 
+
+```js
+
+	cup.stubs.myStub.returns(...);
+
+```
+
+However, if you used the fake reuqire mechanism by calling require on the cup instance. The dependencies of the module you fake require will also be available on the cup.stubs property. But they will be stored using the fully resolved path which is inconvenient to use at best and most likely different per environment. 
+Thats where getStub comes in as it lets you use an alias or shortcut to get to the stub you want.
+
+See the following example, if you had the following structure:
+
+* test.js
+	* testObjects/
+		* foo.js
+		* sub/
+			* bar.js
+
+_testObjects/foo.js_ requires _testObjects/sub/bar.js_. In _test.js_ you fake require _foo.js_ and you wish to set up a stubbed method from _bar.js_. You can easily do this by using the cup's getStub method and passing it "sub/bar" or even "testObjects/sub/bar". both  of these will return the stubbed bar module.
+
+Here is the above explanation in the form of a code example:
+
+```js
+
+	describe("pass requires in grind conf", function () {
+
+            var cup = stirrer.grind({
+                requires: [
+                    "./testObjects/foo" //foo will be fake required
+                ],
+                before: function () {
+                    this.getStub("sub/bar").prototype.useDep.returns("this works!"); //foo depends on bar.js and we get to it and set it upusing alias: "sub/bar"
+                }
+            });
+
+            cup.pour("fake require should be set up correctly", function () {
+
+                var foo = cup.required["./testObjects/foo"]; //we can get to foo using the required property
+                expect(foo).to.exist();
+                expect(foo.useSubDep("")).to.equal("this works!"); //stub returns what we told it to return
+            });
+        });
+```
+
+
 ### name : String
 
 The name of the instance. can be passed initially to the grind method.
@@ -468,7 +528,7 @@ The key used is the same one used to identify the module by its path.
 
 ```
 
-
+---
 <a name="requireMockerSection" />
 ## Require Mocker
 
@@ -526,6 +586,7 @@ setup functions
                    - setupContext: the context to pass into the setup method(s)
 
 
+---
 <a name="stirringSection"/>
 ## Stirring
 
