@@ -28,7 +28,7 @@ A big benefit of Stirrer is that the set up of mocks is made easier and the clea
 
 The aim of this tool is to allow you to write as little as set up code as possible focusing on the test cases themselves.
 
-The **[`RequireMocker`](#requireMockerSection)** that is part of this package is a strong tool that can be used on its own
+The **`RequireMocker`** that is part of this package is a strong tool that can be used on its own
 or as part of the stirrer functionality. Read more about it [below](#requireMockerSection).
 
 > _Mocha Stirrer supports only node.js development currently and will not work in the browser_
@@ -41,7 +41,7 @@ ___
 Below is an example showing how Stirrer can be used to set up ([grind](#grindSection)) a test and then run a test ([pour](#pourSection))
  using the fakes set up and verification defined:
 
-Jump [here](#docsSection) for the full API documentation
+Jump [here](#apiSection) for the full API documentation
 
 ```js
 
@@ -134,9 +134,9 @@ _conf_ is an object that configures the cup instance. The following properties c
 				each entry in the object map should be an object reference
 
 * `delay` - (optional, default: false) When true, cup instance will be created but not set up. meaning non of the fakes
- will be defined. The [start](#cupStartSection) method must be called in order for setup to occur.
+ will be defined. The [brew](#cupStartSection) method must be called in order for setup to occur.
  see the [Stirring section](#stirringSection) for further details on the order of how things are set up and run.
- Note that you shouldn't use delay=true when also passing a test function as fakes wont be initialized.
+ Note that you shouldn't use delay=true when also passing a test function as fakes wont be initialieed.
  setting `setupImmediate` to true overrides this parameters so delay will be ignored
 
 * `transform` - (optional) function receives the currently assigned parameters to the cup instance (cup.pars). If provided, transform
@@ -209,7 +209,7 @@ Clears the cup's fakes(spies/stubs/mocks) and restores them using the internal s
 All registered afters/befores are removed together with all references to spies/stubs/mocks and stub aliases.
 
 The cup's restir method is called internally automatically when the mocha context/describe ends in which the grind method was called or if delay was used,
-from the ending context in which [start](#cupStartSection) was called. See the [Stirring section](#stirringSection) below for a more detailed explanation.
+from the ending context in which [brew](#cupStartSection) was called. See the [Stirring section](#stirringSection) below for a more detailed explanation.
 
 <a name="requireSection">
 ### require(cup, requirePath, options)
@@ -220,7 +220,7 @@ from the ending context in which [start](#cupStartSection) was called. See the [
 _The default context for the setup methods (if you use them) will be the cup instance. To change it simply pass a different setupContext_
 ### RequireMocker
 
-This is the RequireMocker type discussed below. You can new it up and use it on its own. See the [section](requireMockerSection) below for details.
+This is the RequireMocker type discussed below. You can new it up and use it on its own. See the [section](#requireMockerSection) below for details.
 
 ### EMPTY
 
@@ -513,7 +513,7 @@ The mocks created by the cup. Mocks are created according to the map passed to t
 
 ### required : Object
 
-All of the modules (key/val) that were fake required (using the [Require Mocker]()) by passing requires either during grinding or the stir method
+All of the modules (key/val) that were fake required (using the [Require Mocker](#requireMockerSection)) by passing requires either during grinding or the stir method
 The key used is the same one used to identify the module by its path.
 
 ```js
@@ -523,7 +523,7 @@ The key used is the same one used to identify the module by its path.
             });
 
             cup.pour("should be able to test with my faked module", function(){
-            	var fakeFoo = cup.required["./testObjects/foo"]; //the module is now available using the required property of the cup
+            	var fakeFoo = cup.required["./testObjects/foo"]; //the module is now available using the cup's required property
 			});
 
 ```
@@ -538,11 +538,11 @@ This way you don't need to stub everything yourself but let the magic happen for
 A typical use of the Mocker is through the [cup.require](#cupRequireSection) method. However,
 it is possible to use it directly by using the _RequireMocker_ property of mocha-stirrer.
 
-Here's an example (taken from this [test module](https://github.com/yoavniran/mocha-stirrer/blob/master/test/RequireMocker.standalone.test.js)) -
+Here's an example (taken from this [test module](https://github.com/yoavniran/mocha-stirrer/blob/master/test/RequireMocker.standalone.test.js#L55)) -
 
 ```js
  
-	Mocker = require("mocha-stirrer").RequireMocker;
+	var Mocker = require("mocha-stirrer").RequireMocker;
 
 	var mocker = new Mocker(sinon);  //pass sinon or a sinon sandbox to the mocker
 
@@ -579,11 +579,10 @@ setup functions
 
 * `parent` - the parent module that is making the mock require - this is normally the test module
 * `requirePath` - the module to require, relative to the test module (parent)
-<a name="requireMockerRequireOptions"/>
-* `options` - additional setup options
-                   - dontStub: an array of paths that are required by the module or by its dependencies (defined by `requirePath`) to not stub
-                   - setup: object map containing the require path of stubbed dependency and a matching function. the function signature is: fn(stub)
-                   - setupContext: the context to pass into the setup method(s)
+* <a name="requireMockerRequireOptions"/> `options` - additional setup options:
+	* dontStub: an array of paths that are required by the module or by its dependencies to not stub
+	* setup: object map containing the require path of stubbed dependency and a matching function. the function signature is: fn(stub)
+	* setupContext: the context to pass into the setup method(s)
 
 
 ---
