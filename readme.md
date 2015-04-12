@@ -165,6 +165,8 @@ with a timeout error
 
 * `sandbox` - (optional) an object with properties to configure the internal [sinon sandbox](http://sinonjs.org/docs/#sandbox) object Stirrer creates.
 
+* `restirForEach` - (optional, default: false) when set to true the cup will be [restir](#restirSection)red, as in reset, after every test run ([pour](#pourSection)). Unlike the default behavior that will restir the cup only when exiting the context in which the cup was created or the context in which [brew()](#cupStartSection) was called
+
 * `transformForEach` - (optional, default: false) when set to true determines whether the supplied (pars) transform function
 should be run as part of a beforeEach hook. When false will run as part of a before hook
 
@@ -243,7 +245,6 @@ When grinding a new cup you can specify what you wish to stub or spy. In case yo
 	});
 
 ```
-
 
 ___
 
@@ -591,5 +592,7 @@ setup functions
 
 Internally, the mocha hooks (mainly the `before` hook) are used extensively to set up the fakes and your own befores/afters/etc.
 To use Mocha-Stirrer successfully you should have a good grip of the order of execution of things in Mocha in conjunction with its hooks...
+
+I created a small gist that shows how hooks in Mocha can be set up and the resulting order of execution at: [https://gist.github.com/yoavniran/ad29e7ecfe57570b18f7]()
 
 > this section isnt complete yet

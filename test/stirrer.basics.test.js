@@ -726,5 +726,81 @@ describe("stirrer basics tests", function () {
                 expect(counter).to.equal(10);
             });
         });
+
+        describe("test correct order with restir for each", function () {
+
+            var stirrer = require("../lib");
+
+            describe("do simple restir for each test", function () {
+                var cup = stirrer.grind({
+                    name: "restir for each tester",
+                    restirForEach: true,
+                    pars: {
+                        "myPar": "aaa"
+                    },
+                    stubs: {
+                        "myStub": stirrer.EMPTY
+                    },
+                    afterEach: function () {
+                        expect(cup.pars.myStub).to.not.exist();
+                    }
+                });
+
+                cup.pour("should restir after each test", function () {
+                    expect(cup.pars.myPar).to.exist();
+                    expect(cup.stubs.myStub).to.exist();
+                });
+
+                cup.pour("should restir after each test 2nd time", function () {
+                    expect(cup.pars.myPar).to.exist();
+                    expect(cup.stubs.myStub).to.exist();
+                });
+            });
+
+            describe("test restir for each with real stubbing", function () {
+
+                var path = require("path");
+
+                var cup = stirrer.grind({
+                    name: "testing restir foreach with path",
+                    stubs: {
+                        pathJoin: [path, "join"]
+                    },
+                    restirForEach: true
+                });
+
+                cup.stir({
+                    befores: function (next) {
+
+                        this.stubs.pathJoin
+                            .onFirstCall().returns("aaa")
+                            .onSecondCall().returns("bbb");
+
+                        next();
+                    }
+                });
+
+                cup.pour("first test of path join with restir for each", function(){
+
+                    var res1 = this.stubs.pathJoin("a", "b");
+                    expect(res1).to.equal("aaa");
+
+                    var res2 = this.stubs.pathJoin();
+                    expect(res2).to.equal("bbb");
+                });
+
+                describe("stir in different stubbing", function(){
+
+                    cup.stir({
+                        befores: function(next){
+
+                        }
+                    });
+
+                    cup.pour("");
+                });
+
+            });
+        });
     });
 });

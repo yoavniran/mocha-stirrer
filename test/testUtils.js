@@ -9,7 +9,6 @@ module.exports = (function () {
         var conf = {
             globals: {
                 mochaHooks: {
-
                 },
                 mochaHooksNames: ["it", "before", "after", "beforeEach", "afterEach"]
             }
@@ -42,8 +41,13 @@ module.exports = (function () {
         };
     }
 
-    function getFunctionRunnerExpectsError(expectedErr){
+    function getFunctionRunnerExpectsError(expectedErr) { //, runnerName){
         return function (name, fn) {
+
+            //if (runnerName) {
+            //    console.log("### entered fn runner: " + runnerName);
+            //}
+
             if (utils.isFunc(name)){
                 fn = name;
             }
@@ -51,24 +55,16 @@ module.exports = (function () {
             expectedErr = expectedErr || Error;
 
             expect(function(){fn();}).to.throw(expectedErr);
-
-            //try {
-            //    fn();
-            //}
-            //catch(err){
-            //
-            //
-            //}
         };
     }
 
     function _addMockedHooks(obj){
 
-        obj.it = getFunctionRunner();
-        obj.before = getFunctionRunner();
-        obj.after = getFunctionRunner();
-        obj.beforeEach = getFunctionRunner();
-        obj.afterEach = getFunctionRunner();
+        obj.it = getFunctionRunner(undefined, "it");
+        obj.before = getFunctionRunner(undefined, "before");
+        obj.after = getFunctionRunner(undefined, "after");
+        obj.beforeEach = getFunctionRunner(undefined, "beforeEach");
+        obj.afterEach = getFunctionRunner(undefined, "afterEach");
     }
 
     return {
