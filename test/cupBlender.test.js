@@ -146,7 +146,6 @@ describe("cupBlender tests", function () {
                 var cup = cupBlender.blend(conf);
                 cup.start();
             });
-
         });
     });
 })

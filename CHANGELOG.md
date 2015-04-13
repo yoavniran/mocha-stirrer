@@ -1,4 +1,11 @@
-### 0.1.5
+### 0.1.6
+
+* added restirForEach grind flag - to reset after each test
+* added clear error for stub conf of type function that is invalid
+* updated docs with restirForEach
+* added the ability to stir and pour in one go = stir'n pour™
+
+### 0.1.5 - 10/04/2015
 
 * added requires to the grind and stir methods
 * anytime fake require is used on a cup, the stubs will be added to the stubs map of the cup

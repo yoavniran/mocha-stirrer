@@ -1,22 +1,37 @@
 var chai = require("chai"),
     expect = chai.expect,
+    sinon = require("sinon"),
     utils = require("../lib/utils");
 
 module.exports = (function () {
     "use strict";
+
+    var MOCHA_HOOK_NAMES = ["it", "before", "after", "beforeEach", "afterEach"];
 
     function getMockBlendConfig(){
         var conf = {
             globals: {
                 mochaHooks: {
                 },
-                mochaHooksNames: ["it", "before", "after", "beforeEach", "afterEach"]
+                mochaHooksNames: MOCHA_HOOK_NAMES
             }
         };
 
         _addMockedHooks(conf.globals.mochaHooks);
 
         return conf;
+    }
+
+    function stubCupsMochaFunctions(cup){
+
+        cup = cup || {};
+        cup._mocha = cup._mocha || {};
+
+        MOCHA_HOOK_NAMES.forEach(function(name){
+            cup._mocha[name] = sinon.stub();
+        });
+
+        return cup;
     }
 
     function mockCupsMochaFunctions(cup){
@@ -41,12 +56,8 @@ module.exports = (function () {
         };
     }
 
-    function getFunctionRunnerExpectsError(expectedErr) { //, runnerName){
+    function getFunctionRunnerExpectsError(expectedErr) {
         return function (name, fn) {
-
-            //if (runnerName) {
-            //    console.log("### entered fn runner: " + runnerName);
-            //}
 
             if (utils.isFunc(name)){
                 fn = name;
@@ -60,17 +71,16 @@ module.exports = (function () {
 
     function _addMockedHooks(obj){
 
-        obj.it = getFunctionRunner(undefined, "it");
-        obj.before = getFunctionRunner(undefined, "before");
-        obj.after = getFunctionRunner(undefined, "after");
-        obj.beforeEach = getFunctionRunner(undefined, "beforeEach");
-        obj.afterEach = getFunctionRunner(undefined, "afterEach");
+        MOCHA_HOOK_NAMES.forEach(function(name){
+            obj[name] = getFunctionRunner();
+        });
     }
 
     return {
         getFunctionRunner: getFunctionRunner,
         getFunctionRunnerExpectsError:getFunctionRunnerExpectsError,
         mockCupsMochaFunctions:mockCupsMochaFunctions,
-        getMockBlendConfig: getMockBlendConfig
+        getMockBlendConfig: getMockBlendConfig,
+        stubCupsMochaFunctions: stubCupsMochaFunctions
     };
 })();

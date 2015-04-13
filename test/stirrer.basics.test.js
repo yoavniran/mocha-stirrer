@@ -583,6 +583,12 @@ describe("stirrer basics tests", function () {
                 }
             });
 
+            cup.stir({
+               befores: function(){
+                 counter+=1; //should not be executed since we're using pour.wrap
+               }
+            });
+
             cup.pour.wrap("this isnt a test, just a wrapper", function () {
 
             });
@@ -597,6 +603,7 @@ describe("stirrer basics tests", function () {
             after("checking up that all hooks were called", function () {
                 expect(counter).to.equal(3);
             });
+
         });
 
         describe("test correct order with pending", function () {

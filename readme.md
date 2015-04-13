@@ -165,14 +165,14 @@ with a timeout error
 
 * `sandbox` - (optional) an object with properties to configure the internal [sinon sandbox](http://sinonjs.org/docs/#sandbox) object Stirrer creates.
 
-* `restirForEach` - (optional, default: false) when set to true the cup will be [restir](#restirSection)red, as in reset, after every test run ([pour](#pourSection)). Unlike the default behavior that will restir the cup only when exiting the context in which the cup was created or the context in which [brew()](#cupStartSection) was called
+* `restirForEach` - (optional, default: false) when set to true the cup will be [restir](#restirSection)-red, as in reset, after every test run ([pour](#pourSection)). Unlike the default behavior that will restir the cup only when exiting the context in which the cup was created or the context in which [brew()](#cupStartSection) was called 
 
 * `transformForEach` - (optional, default: false) when set to true determines whether the supplied (pars) transform function
 should be run as part of a beforeEach hook. When false will run as part of a before hook
 
 * `setupImmediate` - (optional, default: false) makes the stirrer run its set up logic immediately during the execution of the grind method.
 Also, the setup logic will only be executed once - this is good for a standalone cup that will not be reused between tests.
-If left as false, the setup will happen during the first before or beforeEach hook prior to a test being executed.
+If left as false, the setup will happen during the first before or beforeEach hook prior to a test being executed
 
 * `dontRestir` - (optional, default: false) (see [restir](#restirSection)) will prevent the cup from being "restirred" (reset) in the
 after hook. This means that when the mocha context(describe) finishes, non of the fakes will be restored so you will need to do the restoring manually.
@@ -185,12 +185,12 @@ after hook. This means that when the mocha context(describe) finishes, non of th
 
 	This will fake require the modules according to the provided path and make them available on the 'required' property of the cup. 	 Additional requires can be passed into the `cup` using its [stir](#cupStirMethodSection) method.
 
-* `befores` - (optional) Can either be a function or an array of functions. The signature of these functions is: fn(next). `next` is a function that must be called otherwise tests will not run.
+* `befores` - (optional) Can either be a function or an array of functions. The signature of these functions is: fn(next). _next_ is a function that must be called otherwise tests will not run.
 Each of the registered methods will be executed in sequence right before a test(pour) is run.
 Additional befores can be passed into the `cup` using its [stir](#cupStirMethodSection) method.
 Any registered before functions are removed when the cup is [restirred](#restirSection) (reset)
 
-* `afters` - (optional) Can either be a function or an array of functions. The signature of these functions is: fn(next). `next` is a function that must be called otherwise tests will not finish running.
+* `afters` - (optional) Can either be a function or an array of functions. The signature of these functions is: fn(next). _next_ is a function that must be called otherwise tests will not finish running.
 Each of the registered methods will be executed in sequence right after a test(pour) is run.
 Additional afters can be passed into the `cup` using its [stir](#cupStirMethodSection) method
 Any registered afters functions are removed when the cup is [restirred](#restirSection) (reset)
@@ -296,11 +296,13 @@ already passed using the grind method or previously calling stir.
 
 
 <a name="pourSection"/>
-### pour(name, fn)
+### pour(name, fn, stirData)
 > Alias: test
 
 * `name` - (mandatory) name for the test
 * `fn` - (optional) function to be executed as the test
+* `stirData` - (optional) data that is stirred into the cup just before the test fn is executed (**[stir'n pour](#stirnpourSection)™**). The same data that can be stirred by calling the [stir](#cupStirMethodSection) method.
+
 
 the Pour method mimics Mocha's '_it_' function and supports it's different flavors:
 
@@ -357,6 +359,11 @@ If you want to use Mocha's '_it_' on your own you can call pour like this:
 	});
 
 ```
+<a name="stirnpourSection"/>
+#### stir'n pour™
+
+When calling _pour()_ and passing _stirData_ you're essentially shortcutting calling stir and then pour separately. The major distinction being is that when calling _stir_ on its own the data will be stirred into the cup internally by using the Mocha before hook, meaning it wont actually be stirred in at the time of calling stir but rather before the first test (pour) of the context. Remember, the before hook happens only once within a Mocha context(describe). If you wish to use _pour_ multiple times in the same context but with different pars or setup/teardown use **stir'n pour™**.
+
 
 <a name="cupStartSection"/>
 ### brew()

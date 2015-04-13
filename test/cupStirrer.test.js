@@ -61,6 +61,67 @@ describe("cupStirrer tests", function () {
         }
     });
 
+    describe("test stir of parameters", function () {
+
+        var testCup = testUtils.mockCupsMochaFunctions({pars: {parA: "aaa"}});
+
+        it("should add pars and leave existing ones in place", function () {
+
+            CupStirrer.prototype.stir.call(testCup, {
+                pars: {parB: "bbb"}
+            });
+
+            expect(testCup.pars.parA).to.equal("aaa");
+            expect(testCup.pars.parB).to.equal("bbb");
+
+            CupStirrer.prototype.stir.call(testCup, {
+                pars: {parC: "ccc"}
+            });
+
+            expect(testCup.pars.parA).to.equal("aaa");
+            expect(testCup.pars.parB).to.equal("bbb");
+            expect(testCup.pars.parC).to.equal("ccc");
+        });
+    });
+
+    describe("test stir of befores", function () {
+
+        var funcA = function () {
+        };
+        var funcB = function () {
+        };
+        var funcC = function () {
+        };
+        var funcD = function () {
+        };
+
+        var testCup = testUtils.mockCupsMochaFunctions({
+            _befores: [funcA]
+        });
+
+        it("should add pars and leave existing ones in place", function () {
+
+            CupStirrer.prototype.stir.call(testCup, {
+                befores: funcB
+            });
+
+            expect(testCup._befores).to.contain(funcA);
+            expect(testCup._befores).to.contain(funcB);
+
+            CupStirrer.prototype.stir.call(testCup, {
+                befores: [funcC, funcD]
+            });
+
+            expect(testCup._befores).to.contain(funcA);
+            expect(testCup._befores).to.contain(funcB);
+            expect(testCup._befores).to.contain(funcC);
+            expect(testCup._befores).to.contain(funcD);
+
+            console.log("_befores === ", testCup._befores);
+        });
+
+    });
+
     describe("test stir with before/after as single function", function () {
 
         cup.pour("stir should add everything in config", function () {
@@ -119,19 +180,79 @@ describe("cupStirrer tests", function () {
         });
     });
 
-    describe("test stir with requires failing", function(){
+    describe("test stir with requires failing", function () {
 
         var testCup = getNewTestCup({});
 
         testCup._mocha.before = testUtils.getFunctionRunnerExpectsError();
 
-        CupStirrer.prototype.stir.call(testCup, {
-            requires: function () {
-                return [
-                    {path: "", options: {test: "foo"}}
-                ];
-            }
+        it("should throw error on missing require path", function () {
+
+            CupStirrer.prototype.stir.call(testCup, {
+                requires: function () {
+                    return [
+                        {path: "", options: {test: "foo"}}
+                    ];
+                }
+            });
+        });
+    });
+
+    describe("test stir without immediate flag", function () {
+
+        var testCup = testUtils.stubCupsMochaFunctions({
+            _befores: [],
+            _afters: [],
+            required: {},
+            require: sinon.stub()
         });
 
+        var utils = require("../lib/utils");
+
+        it("should not stir conf immediately", function () {
+            CupStirrer.prototype.stir.call(testCup, {
+                befores: function () {
+                },
+                afters: function () {
+                },
+                pars: {
+                    myPar: "foo"
+                },
+                requires: [
+                    "path/to/module"
+                ]
+            });
+
+            expect(testCup._mocha.before).to.have.been.called();
+            expect(testCup.require).to.have.callCount(1);
+        });
+    });
+
+    describe("test stir with immediate flag", function () {
+
+        var testCup = testUtils.stubCupsMochaFunctions({
+            _befores: [],
+            _afters: [],
+            required: {},
+            require: sinon.stub()
+        });
+
+        it("should stir conf immediately", function () {
+            CupStirrer.prototype._stirImmediate.call(testCup, {
+                befores: function () {
+                },
+                afters: function () {
+                },
+                pars: {
+                    myPar: "foo"
+                },
+                requires: [
+                    "path/to/module"
+                ]
+            });
+
+            expect(testCup._mocha.before).to.not.have.been.called();
+            expect(testCup.require).to.have.callCount(1);
+        });
     });
 });

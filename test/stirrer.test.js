@@ -1,5 +1,6 @@
 var chai = require("chai"),
     expect = chai.expect,
+    sinon  = require("sinon"),
     dirtyChai = require("dirty-chai"),
     sinonChai = require("sinon-chai");
 
@@ -362,6 +363,78 @@ describe("stirrer tests", function () {
                     var joined = this.spies.pathJoin("1", "2");
                     expect(joined).to.equal("1/2");
                 });
+            });
+        });
+
+        describe("use stirrer with stir'n pour™ ", function(){
+
+            var counter = sinon.stub();
+
+            var testBfr1 = function (next) {
+                counter();  //2 //5
+                next();
+            };
+
+            var  testBfr2 = function (next){
+                expect(counter.callCount).to.equal(5);
+                counter(); //6
+                next();
+            };
+
+            var cup = stirrer.grind({
+                name: "stir'n pour™ cup",
+                pars: {
+                    "foo": "bar"
+                },
+                before: function (){
+                    expect(counter).to.not.have.been.called();
+                    counter(); //1
+                },
+                after: function(){
+                    counter();   //10
+                },
+                befores: [
+                    testBfr1
+                ],
+                afters: [
+                    function (next) {
+                        counter(); //4  //8
+                        next();
+                    }
+                ]
+            });
+
+            cup.pour("first test without stir'n pour™ ", function(){
+                expect(counter.callCount).to.equal(2);
+                counter(); //3
+
+                expect(this.pars.foo).to.equal("bar");
+            });
+
+            cup.pour("second test with stir'n pour™ ", function(){
+
+                expect(this._befores[0]).to.equal(testBfr1);
+                expect(this._befores[1]).to.equal(testBfr2);
+
+                expect(counter.callCount).to.equal(6);
+                counter();  //7
+
+                expect(this.pars.foo).to.equal("bar");
+                expect(this.pars.testPar).to.equal(123);
+            }, {
+                pars: {
+                    testPar: 123
+                },
+                befores: testBfr2,
+                afters: function(next){
+                    expect(counter.callCount).to.equal(8);
+                    counter(); //9
+                    next();
+                }
+            });
+
+            after(function(){
+                 expect(counter.callCount).to.equal(10);
             });
         });
     });
