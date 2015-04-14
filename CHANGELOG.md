@@ -1,4 +1,9 @@
-### 0.1.7
+### 0.1.8
+
+* fixed bug - restirForEach doing restir before the conf's afterEach function is executed causing verification cannot be accomplished
+* improved debug info
+
+### 0.1.7 - 14/04/2015
 
 * quick release to remove 'idea' folder from being published to npm
 
