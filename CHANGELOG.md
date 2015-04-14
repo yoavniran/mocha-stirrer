@@ -1,4 +1,8 @@
-### 0.1.6
+### 0.1.7
+
+* quick release to remove 'idea' folder from being published to npm
+
+### 0.1.6 - 13/04/2015
 
 * added restirForEach grind flag - to reset after each test
 * added clear error for stub conf of type function that is invalid
