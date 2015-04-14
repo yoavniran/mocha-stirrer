@@ -299,6 +299,8 @@ already passed using the grind method or previously calling stir.
 ### pour(name, fn, stirData)
 > Alias: test
 
+Wraps Mocha's it method and executes it with the added flows for befores/afters
+
 * `name` - (mandatory) name for the test
 * `fn` - (optional) function to be executed as the test
 * `stirData` - (optional) data that is stirred into the cup just before the test fn is executed (**[stir'n pour](#stirnpourSection)™**). The same data that can be stirred by calling the [stir](#cupStirMethodSection) method.
@@ -362,7 +364,7 @@ If you want to use Mocha's '_it_' on your own you can call pour like this:
 <a name="stirnpourSection"/>
 #### stir'n pour™
 
-When calling _pour()_ and passing _stirData_ you're essentially shortcutting calling stir and then pour separately. The major distinction being is that when calling _stir_ on its own the data will be stirred into the cup internally by using the Mocha before hook, meaning it wont actually be stirred in at the time of calling stir but rather before the first test (pour) of the context. Remember, the before hook happens only once within a Mocha context(describe). If you wish to use _pour_ multiple times in the same context but with different pars or setup/teardown use **stir'n pour™**.
+When calling _pour()_ and passing _stirData_ you're essentially shortcutting calling stir and then pour separately. The major distinction being is that when calling _stir_ on its own the data will be stirred into the cup internally by using the Mocha before hook, meaning it wont actually be stirred in at the time of calling stir but rather before the first test (pour) of the context. Remember, the before hook happens only once within a Mocha context(describe). If you wish to use _pour_ multiple times in the same context but with different pars or setup/teardown use **stir'n pour™**. If pars are passed as part of the stirData and if a transform function was supplied during the grind then it will be called on the cup's pars object after merging the new pars data.
 
 
 <a name="cupStartSection"/>
@@ -494,6 +496,9 @@ Here is the above explanation in the form of a code example:
         });
 ```
 
+### transformPars()
+
+Will run the transform function provided (if it one was provided) during the [grind](#grindSection) on the current cup instance's pars object.
 
 ### name : String
 
