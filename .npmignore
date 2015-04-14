@@ -10,3 +10,5 @@ output/coverage.lcov.txt
 output/coverage/
 output/coverage.html
 .travis.yml
+.idea/
+idea/
