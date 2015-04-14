@@ -234,7 +234,8 @@ describe("cupStirrer tests", function () {
             _befores: [],
             _afters: [],
             required: {},
-            require: sinon.stub()
+            require: sinon.stub(),
+            transformPars: sinon.stub()
         });
 
         it("should stir conf immediately", function () {
@@ -252,7 +253,8 @@ describe("cupStirrer tests", function () {
             });
 
             expect(testCup._mocha.before).to.not.have.been.called();
-            expect(testCup.require).to.have.callCount(1);
+            expect(testCup.require).to.have.been.called();
+            expect(testCup.transformPars).to.have.been.called();
         });
     });
 });

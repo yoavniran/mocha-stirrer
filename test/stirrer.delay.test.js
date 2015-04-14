@@ -38,8 +38,8 @@ describe("stirrer delay tests", function () {
     describe("test delay caused cup fakes to not be initialized", function () {
 
         it("fakes should not be initialized", function () {
-            expect(delayedCup.stubs).to.be.undefined();
-            expect(delayedCup.spies).to.be.undefined();
+            expect(delayedCup.stubs).to.be.empty();
+            expect(delayedCup.spies).to.be.empty();
         });
     });
 

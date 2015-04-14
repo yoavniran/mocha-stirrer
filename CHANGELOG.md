@@ -1,3 +1,8 @@
+### 0.1.9
+
+* fixed issue - pars werent transformed when using stir'n pour™
+* added transformsPars function to cup API
+
 ### 0.1.8
 
 * fixed bug - restirForEach doing restir before the conf's afterEach function is executed causing verification cannot be accomplished

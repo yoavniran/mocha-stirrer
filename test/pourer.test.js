@@ -52,10 +52,10 @@ describe("pourer tests", function () {
 
     describe("test stir'n pour™ ", function () {
 
-
         var counter = 0;
 
         var cup = testUtils.mockCupsMochaFunctions({
+            name: "stir'n pour™ cup",
             _isHooked: true,
             pars: {
                 "foo": "bar"
@@ -63,7 +63,7 @@ describe("pourer tests", function () {
             _befores: [
                 function (next) {
                     expect(counter).to.equal(0);
-                    counter += 1;
+                    counter += 1;  //1
                     next();
                 }
             ],
@@ -80,7 +80,6 @@ describe("pourer tests", function () {
             required: {}
         });
 
-
         it("stir'n pour™ should be executed successfully", function () {
 
             pourer.attach(cup);
@@ -88,26 +87,12 @@ describe("pourer tests", function () {
             cup.pour("dummy test to ensure pour works", function () {
 
                 expect(counter).to.equal(1);
-                counter += 1;
+                counter += 1; //2
 
                 expect(this.pars.foo).to.equal("bar");
                 expect(cup._stirImmediate).to.have.been.called();
-
             }, {
-                befores: function (next) {
-                    expect(counter).to.equal(1);
-                    counter += 1;
-                    next();
-                },
-                afters: function (next) {
-                    expect(counter).to.equal(4);
-                    counter += 1;
-                    next();
-                },
-                pars: {
-                    "testPar": 123
-                },
-                required: ["path/to/module"]
+                //dummy object to cause stir immediate to be called
             });
         });
 

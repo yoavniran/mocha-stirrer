@@ -383,6 +383,14 @@ describe("stirrer tests", function () {
 
             var cup = stirrer.grind({
                 name: "stir'n pour™ cup",
+                transform: function (pars) {
+
+                    if (pars.testPar) {
+                        pars.testPar += 1;
+                    }
+
+                    return pars;
+                },
                 pars: {
                     "foo": "bar"
                 },
@@ -420,7 +428,7 @@ describe("stirrer tests", function () {
                 counter();  //7
 
                 expect(this.pars.foo).to.equal("bar");
-                expect(this.pars.testPar).to.equal(123);
+                expect(this.pars.testPar).to.equal(124);
             }, {
                 pars: {
                     testPar: 123
@@ -452,7 +460,7 @@ describe("stirrer tests", function () {
                 afterEach: function () {
                     expect(this.stubs.myStub).to.have.been.called();
                 },
-                after: function(){
+                after: function () {
                     expect(this.stubs.myStub).to.not.exist();
                 }
             });
