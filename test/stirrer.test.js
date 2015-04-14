@@ -1,6 +1,6 @@
 var chai = require("chai"),
     expect = chai.expect,
-    sinon  = require("sinon"),
+    sinon = require("sinon"),
     dirtyChai = require("dirty-chai"),
     sinonChai = require("sinon-chai");
 
@@ -302,7 +302,7 @@ describe("stirrer tests", function () {
                 });
             });
 
-            describe("use create alias for grind", function(){
+            describe("use create alias for grind", function () {
 
                 var path = require("path");
 
@@ -321,7 +321,7 @@ describe("stirrer tests", function () {
                 });
             });
 
-            describe("use reset alias for restir on cup", function(){
+            describe("use reset alias for restir on cup", function () {
 
                 var path = require("path");
 
@@ -343,7 +343,7 @@ describe("stirrer tests", function () {
                 });
             });
 
-            describe("use reset alias for restir on stirrer", function(){
+            describe("use reset alias for restir on stirrer", function () {
 
                 var path = require("path");
 
@@ -366,7 +366,7 @@ describe("stirrer tests", function () {
             });
         });
 
-        describe("use stirrer with stir'n pour™ ", function(){
+        describe("use stirrer with stir'n pour™ ", function () {
 
             var counter = sinon.stub();
 
@@ -375,7 +375,7 @@ describe("stirrer tests", function () {
                 next();
             };
 
-            var  testBfr2 = function (next){
+            var testBfr2 = function (next) {
                 expect(counter.callCount).to.equal(5);
                 counter(); //6
                 next();
@@ -386,11 +386,11 @@ describe("stirrer tests", function () {
                 pars: {
                     "foo": "bar"
                 },
-                before: function (){
+                before: function () {
                     expect(counter).to.not.have.been.called();
                     counter(); //1
                 },
-                after: function(){
+                after: function () {
                     counter();   //10
                 },
                 befores: [
@@ -404,14 +404,14 @@ describe("stirrer tests", function () {
                 ]
             });
 
-            cup.pour("first test without stir'n pour™ ", function(){
+            cup.pour("first test without stir'n pour™ ", function () {
                 expect(counter.callCount).to.equal(2);
                 counter(); //3
 
                 expect(this.pars.foo).to.equal("bar");
             });
 
-            cup.pour("second test with stir'n pour™ ", function(){
+            cup.pour("second test with stir'n pour™ ", function () {
 
                 expect(this._befores[0]).to.equal(testBfr1);
                 expect(this._befores[1]).to.equal(testBfr2);
@@ -426,15 +426,45 @@ describe("stirrer tests", function () {
                     testPar: 123
                 },
                 befores: testBfr2,
-                afters: function(next){
+                afters: function (next) {
                     expect(counter.callCount).to.equal(8);
                     counter(); //9
                     next();
                 }
             });
 
-            after(function(){
-                 expect(counter.callCount).to.equal(10);
+            after(function () {
+                expect(counter.callCount).to.equal(10);
+            });
+        });
+
+        describe("use stirrer with restirForEach", function () {
+
+            var cup = stirrer.grind({
+                name: "restirForEach cup",
+                restirForEach: true,
+                stubs: {
+                    myStub: stirrer.EMPTY
+                },
+                beforeEach: function () {
+                    this.stubs.myStub.returns("hello");
+                },
+                afterEach: function () {
+                    expect(this.stubs.myStub).to.have.been.called();
+                },
+                after: function(){
+                    expect(this.stubs.myStub).to.not.exist();
+                }
+            });
+
+            cup.pour("test #1 with restirForEach", function () {
+                var result = this.stubs.myStub();
+                expect(result).to.equal("hello");
+            });
+
+            cup.pour("test #2 with restirForEach", function () {
+                var result = this.stubs.myStub();
+                expect(result).to.equal("hello");
             });
         });
     });
