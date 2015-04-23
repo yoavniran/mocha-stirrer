@@ -47,15 +47,22 @@ describe("cupBlender tests", function () {
         });
     });
 
-    describe("test mock require using requires in stir", function () {
+    describe("test mock require using requires in config", function () {
 
-        var cup = cupBlender.blend(testUtils.getMockBlendConfig());
+        var conf = testUtils.getMockBlendConfig();
+
+        conf.name = "test requires in config cup";
+        conf.requires = ["./testObjects/foo"];
+
+        var cup = cupBlender.blend(conf);
+
+        testUtils.stubCupsMochaFunctions(cup);
+
+        cup._mocha.before = testUtils.getFunctionRunner();
 
         it("should fake require module and enrich cup with stubs by stirring in requires ", function () {
 
-            cup.stir({
-                requires: ["./testObjects/foo"]
-            });
+            cup.brew();
 
             var fakeFoo = cup.required["./testObjects/foo"];
 
@@ -74,6 +81,23 @@ describe("cupBlender tests", function () {
 
         after(function () {
             cup.restir();
+        });
+    });
+
+    describe("test mock require with missing path", function () {
+
+        var conf = testUtils.getMockBlendConfig();
+
+        conf.requires = [{}];
+
+        var cup = cupBlender.blend(conf);
+
+        testUtils.stubCupsMochaFunctions(cup);
+
+        cup._mocha.before = testUtils.getFunctionRunnerExpectsError();
+
+        it("should fail on fake require with missing path", function () {
+            cup.brew();
         });
     });
 
@@ -134,7 +158,7 @@ describe("cupBlender tests", function () {
             });
         });
 
-        describe("test invalid stub type - unknown string", function(){
+        describe("test invalid stub type - unknown string", function () {
             var conf = testUtils.getMockBlendConfig();
             conf.stubs = {
                 failStub: "aaa"
@@ -148,6 +172,4 @@ describe("cupBlender tests", function () {
             });
         });
     });
-})
-;
-
+});

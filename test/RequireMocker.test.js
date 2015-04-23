@@ -160,36 +160,34 @@ describe("testing auto mocking for require", function () {
             });
         });
 
-        describe("pass requires to stir method", function(){
-
-            var cup = stirrer.grind();
-
-            cup.stir({
-                requires: [{
-                    path: "./testObjects/foo",
-                    options: {
-                        setup: {
-                            "./sub/func": function (stub) {
-                                stub.returns("bla bla");
-                            }
-                        }
-                    }
-                }],
-                pars: function(){
-                    return {
-                        "funcRetVal": "bla bla"
-                    };
-                }
-            });
-
-            cup.pour("fake require should be  set up correctly with setup", function () {
-                var foo = cup.required["./testObjects/foo"];
-                expect(foo).to.exist();
-                expect(foo.useFuncDep()).to.equal("bla bla");
-            });
-
-
-        });
+        //describe("pass requires to stir method", function(){
+        //
+        //    var cup = stirrer.grind();
+        //
+        //    cup.stir({
+        //        requires: [{
+        //            path: "./testObjects/foo",
+        //            options: {
+        //                setup: {
+        //                    "./sub/func": function (stub) {
+        //                        stub.returns("bla bla");
+        //                    }
+        //                }
+        //            }
+        //        }],
+        //        pars: function(){
+        //            return {
+        //                "funcRetVal": "bla bla"
+        //            };
+        //        }
+        //    });
+        //
+        //    cup.pour("fake require should be  set up correctly with setup", function () {
+        //        var foo = cup.required["./testObjects/foo"];
+        //        expect(foo).to.exist();
+        //        expect(foo.useFuncDep()).to.equal("bla bla");
+        //    });
+        //});
     });
 
     it("requiring the same module normally again should now work normally still", function () {

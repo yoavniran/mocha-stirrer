@@ -1,3 +1,7 @@
+### 0.1.10
+* fixing bug that fake require isnt repeated when using restirForEach -
+moving fake requiring from stirrer to blender so requiring happens in the same flow as stubbing/spying/mocking.
+
 ### 0.1.9
 
 * fixed issue - pars werent transformed when using stir'n pour™

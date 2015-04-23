@@ -454,6 +454,9 @@ describe("stirrer tests", function () {
                 stubs: {
                     myStub: stirrer.EMPTY
                 },
+
+                requires: ["./testObjects/foo"],
+
                 beforeEach: function () {
                     this.stubs.myStub.returns("hello");
                 },
@@ -468,11 +471,25 @@ describe("stirrer tests", function () {
             cup.pour("test #1 with restirForEach", function () {
                 var result = this.stubs.myStub();
                 expect(result).to.equal("hello");
+
+                expect(this.required["./testObjects/foo"]).to.exist();
+
+                var funcStub = this.getStub("sub/func");
+                funcStub.returns("bla");
+
+                expect(funcStub()).to.equal("bla");
             });
 
             cup.pour("test #2 with restirForEach", function () {
                 var result = this.stubs.myStub();
                 expect(result).to.equal("hello");
+
+                expect(this.required["./testObjects/foo"]).to.exist();
+
+                var funcStub = this.getStub("sub/func");
+                funcStub.returns("bla");
+
+                expect(funcStub()).to.equal("bla");
             });
         });
     });
