@@ -1,6 +1,6 @@
 {
   "name": "mocha-stirrer",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "Easily mock and set up tests for Mocha and Sinon then test, then reuse",
   "main": "./lib/index.js",
   "scripts": {
