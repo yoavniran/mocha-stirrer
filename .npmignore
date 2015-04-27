@@ -4,7 +4,6 @@
 .DS_Store
 docs/
 examples/
-test/
 .coveralls.yml
 output/coverage.lcov.txt
 output/coverage/
