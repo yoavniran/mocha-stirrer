@@ -24,7 +24,6 @@ describe("testing auto mocking for require from a different folder", function ()
         }).to.throw();
     });
 
-
     it("should set the parent using the options", function(){
 
         var conf = testUtils.getMockStartBlendConfig();

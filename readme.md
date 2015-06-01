@@ -6,15 +6,13 @@
 [![Codacy Badge](https://www.codacy.com/project/badge/12374261d28a40a5b05054d5b78c783b)](https://www.codacy.com/app/yoavniran/mocha-stirrer)
 [![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)](http://gruntjs.com/)
 
-> **This document is still a work in progress with several sections still missing. I'm on it!**
-
 * [Introduction](#introSection)
 * [Example](#firstExampleSection)
 * [API](#apiSection)
 * [Require Mocker](#requireMockerSection)
 * [Stirring](#stirringSection)
 
-<a name="introSection">
+<a name="introSection" id="introSection">
 # Mocha Stirrer
 
 
@@ -35,7 +33,7 @@ or as part of the stirrer functionality. Read more about it [below](#requireMock
 
 ___
 
-<a name="firstExampleSection"/>
+<a id="firstExampleSection" id="firstExampleSection"/>
 ## Example
 
 Below is an example showing how Stirrer can be used to set up ([grind](#grindSection)) a test and then run a test ([pour](#pourSection))
@@ -66,18 +64,18 @@ Jump [here](#apiSection) for the full API documentation
 	            "fs": fs
 	        },
 	        before: function (cup) {
-	            cup.stubs.barGetStats.returns("stats!");
-	            cup.mocks.fs.expects("readdir").once().callsArgWithAsync(1, "oh no!");
+	            this.stubs.barGetStats.returns("stats!");
+	            this.mocks.fs.expects("readdir").once().callsArgWithAsync(1, "oh no!");
 	        },
 	        after: function () {
-	            expect(cup.stubs.barGetStats.calledOnce).to.be.true();
-	            expect(cup.spies.pathJoin.calledOnce).to.be.true();
+	            expect(this.stubs.barGetStats.calledOnce).to.be.true();
+	            expect(this.spies.pathJoin.calledOnce).to.be.true();
 	        }
 	    });
 
 	    cup.pour("fakes setup should work as defined", function (done) {
 
-	        expect(Bar.prototype.getStats).to.equal(cup.stubs.barGetStats);
+	        expect(Bar.prototype.getStats).to.equal(this.stubs.barGetStats);
 
 	        var stats = foo.barStats();
 	        expect(stats).to.equal("stats!");
@@ -96,7 +94,7 @@ Jump [here](#apiSection) for the full API documentation
 
 ___
 
-<a name="apiSection"/>
+<a id="apiSection"/>
 ## Stirrer API
 
 <a name="grindSection"/>
@@ -108,7 +106,7 @@ Creates a new **[Cup](#cupSection)**  instance.
 
 A cup can be used between tests
 
-<a name="stirrerGrindConfParSection"/>
+<a id="stirrerGrindConfParSection"/>
 _conf_ is an object that configures the cup instance. The following properties can be passed in:
 
 * `name` - (optional) any string that will be used for naming mocha hooks
@@ -181,7 +179,7 @@ after hook. This means that when the mocha context(describe) finishes, non of th
  requires is either an array or a function (returning array). Each element in the array should either be:
 
 	1) string with the path of the module to require
-	2) an object: {path: "", options: {}) - options is optional (for options details see [below](#requireMockerRequireOptions))
+	2) an object: {path: "", options: {}) - options is optional. options can include a 'parentModule' property which should point to a module that will be used for resolving dependencies' path. see the info [here](#stirrerSetReqParentrSection) for more explanation. (for the rest of the options details see [below](#requireMockerRequireOptions))
 
 	This will fake require the modules according to the provided path and make them available on the 'required' property of the cup. 	 Additional requires can be passed into the `cup` using its [stir](#cupStirMethodSection) method.
 
@@ -196,13 +194,16 @@ Additional afters can be passed into the `cup` using its [stir](#cupStirMethodSe
 Any registered afters functions are removed when the cup is [restirred](#restirSection) (reset)
 
 
-<a name="stirrerGrindtestFnParSection"/>
+<a id="stirrerGrindtestFnParSection"/>
 _testFn_
 
 A test function to be run immediately with the cup object. Provides a shortcut to calling _pour(...)_ on the cup object.
 
+<a id="stirrerSetReqParentrSection"/>
+### setRequireParent(module)
+Sets the parent module that will be used as the parent of the fake require. this is needed for module path resolution the default parent module is the first module that required the stirrer (index) this method is needed in case there are test modules in different folders that use the fake require capability of RequireMocker
 
-<a name="restirSection"/>
+<a id="restirSection"/>
 ### restir(cup)
 
 > Alias: reset
@@ -213,7 +214,7 @@ All registered afters/befores are removed together with all references to spies/
 The cup's restir method is called internally automatically when the mocha context/describe ends in which the grind method was called or if delay was used,
 from the ending context in which [brew](#cupStartSection) was called. See the [Stirring section](#stirringSection) below for a more detailed explanation.
 
-<a name="requireSection">
+<a id="requireSection">
 ### require(cup, requirePath, options)
 
 * `cup`- the cup instance to use as the sandbox and add the stubs to
@@ -248,7 +249,7 @@ When grinding a new cup you can specify what you wish to stub or spy. In case yo
 
 ___
 
-<a name="cupSection" />
+<a id="cupSection" />
 ## The Cup
 
 A cup is created by calling the [grind](#grindSection) method:
@@ -260,8 +261,8 @@ A cup is created by calling the [grind](#grindSection) method:
     var cup = stirrer.grind({});
 ```
 
-<a name="cupStirMethodSection"/>
-### stir(conf)
+<a id="cupStirMethodSection"/>
+### .prototype.stir(conf)
 
 Add information to the cup that can be used by following tests. the new information is added on top of any other data
 already passed using the grind method or previously calling stir.
@@ -295,8 +296,8 @@ already passed using the grind method or previously calling stir.
 	* an object: {path: "", options: {}) - options is optional
 
 
-<a name="pourSection"/>
-### pour(name, fn, stirData)
+<a id="pourSection"/>
+### .prototype.pour(name, fn, stirData)
 > Alias: test
 
 Wraps Mocha's it method and executes it with the added flows for befores/afters
@@ -361,14 +362,14 @@ If you want to use Mocha's '_it_' on your own you can call pour like this:
 	});
 
 ```
-<a name="stirnpourSection"/>
+<a id="stirnpourSection"/>
 #### stir'n pour™
 
 When calling _pour()_ and passing _stirData_ you're essentially shortcutting calling stir and then pour separately. The major distinction being is that when calling _stir_ on its own the data will be stirred into the cup internally by using the Mocha before hook, meaning it wont actually be stirred in at the time of calling stir but rather before the first test (pour) of the context. Remember, the before hook happens only once within a Mocha context(describe). If you wish to use _pour_ multiple times in the same context but with different pars or setup/teardown use **stir'n pour™**. If pars are passed as part of the stirData and if a transform function was supplied during the grind then it will be called on the cup's pars object after merging the new pars data.
 
 
-<a name="cupStartSection"/>
-### brew()
+<a id="cupStartSection"/>
+### .prototype.brew()
 
 > Alias: start
 
@@ -405,7 +406,7 @@ or in a shared util class. Then you wouldn't want the cup to be started immediat
 
     describe("start causes cup fakes to be initialized on demand", function () {
 
-        delayedCup.start(); //on demand start
+        delayedCup.brew(); //on demand start
 
         delayedCup.pour("fakes should not be initialized", function (done) {
 
@@ -422,7 +423,7 @@ or in a shared util class. Then you wouldn't want the cup to be started immediat
 ```
 
 
-### restir()
+### .prototype.restir()
 
 > Alias: reset
 
@@ -430,12 +431,12 @@ see the [restir global method details](#restirSection)
 
 
 <a name="cupRequireSection"/>
-### require(reqPath, options)
+### .prototype.require(reqPath, options)
 
 see the [require global method details](#requireSection)
 
 
-### getStub(name)
+### .prototype.getStub(name)
 
 * `name`- is the way to identify the stub you wish to get.
 
@@ -496,38 +497,42 @@ Here is the above explanation in the form of a code example:
         });
 ```
 
-### transformPars()
+### .prototype.transformPars()
 
-Will run the transform function provided (if it one was provided) during the [grind](#grindSection) on the current cup instance's pars object.
+Will run the transform function provided (if it one was provided) during the [grind](#grindSection) on the current cup instance's pars object
 
-### name : String
+### .prototype.getRequired(name)
 
-The name of the instance. can be passed initially to the grind method.
+Get a mock-required module using the path it was required with or the alias that was used when the module was required
 
-### sb : Sinon.Sandbox
+### .prototype.name : String
 
-The instance of sinon sandbox used by the cup. This enables the cup restir method to restore all fakes created by the cup automatically.
+The name of the instance. can be passed initially to the grind method
 
-### pars : Object
+### .prototype.sb : Sinon.Sandbox
+
+The instance of sinon sandbox used by the cup. This enables the cup restir method to restore all fakes created by the cup automatically
+
+### .prototype.pars : Object
 
 All of the parameters (key/val) passed to the cup either during grinding or using the stir method
 
-### spies : Object
+### .prototype.spies : Object
 
 The spies created by the cup. Spies are created according to the map passed to the cup during the grinding
 
-### stubs : Object
+### .prototype.stubs : Object
 
 The stubs created by the cup. Stubs are created according to the map passed to the cup during the grinding
 
-### mocks : Object
+### .prototype.mocks : Object
 
 The mocks created by the cup. Mocks are created according to the map passed to the cup during the grinding
 
-### required : Object
+### .prototype.required : Object
 
-All of the modules (key/val) that were fake required (using the [Require Mocker](#requireMockerSection)) by passing requires either during grinding or the stir method
-The key used is the same one used to identify the module by its path.
+All of the modules (key/val) that were fake required (using the [Require Mocker](#requireMockerSection)) by passing requires either during grinding or the stir method.
+The key used is the same one used to identify the module by its path
 
 ```js
 
@@ -542,14 +547,16 @@ The key used is the same one used to identify the module by its path.
 ```
 
 ---
-<a name="requireMockerSection" />
+<a id="requireMockerSection" />
 ## Require Mocker
 
 The Mocker lets you require a module using a simple call and it will stub out all of its dependencies (as best it could).
 This way you don't need to stub everything yourself but let the magic happen for you.
 
 A typical use of the Mocker is through the [cup.require](#cupRequireSection) method. However,
-it is possible to use it directly by using the _RequireMocker_ property of mocha-stirrer.
+it is possible to use it directly by using the _RequireMocker_ property of mocha-stirrer
+
+The typical mock type for the Mocker is STUB. You can control which type is used using the options passed to the [require](#requireMockerRequireSection) method or by setting the global default using this static method: [setGlobalMockType](#setGlobalMockTypeSection)
 
 Here's an example (taken from this [test module](https://github.com/yoavniran/mocha-stirrer/blob/master/test/RequireMocker.standalone.test.js#L55)) -
 
@@ -559,16 +566,28 @@ Here's an example (taken from this [test module](https://github.com/yoavniran/mo
 
 	var mocker = new Mocker(sinon);  //pass sinon or a sinon sandbox to the mocker
 
-	var foo = mocker.require("./testObjects/foo", {
-            dontStub: ["fs"]
-        });
+	Mocker.setGlobalMockType(Mocker.MOCK_TYPES.SPY); //change the global mock type
 
-    expect(foo).to.exist();
-    expect(foo.bar()).to.equal("foo");
-    expect(foo.wat("a", "b")).to.not.exist(); //internally path should be stubbed and not set up to return anything
-    expect(foo.useSub()).to.not.exist();
-    expect(foo.useSubDep("world")).to.not.exist();
-    expect(foo.useFuncDep()).to.not.exist();
+	var foo = mocker.require("./testObjects/foo", {
+                dontMock: ["fs"],
+                mockType: {
+                    "path": Mocker.MOCK_TYPES.STUB, //define a specific mock type for this module
+                    "./sub/func": Mocker.MOCK_TYPES.SPY,
+                    "./sub/bar": Mocker.MOCK_TYPES.STUB
+                }
+            });
+
+            expect(foo).to.exist();
+
+            expect(foo.bar()).to.equal("foo");
+            expect(foo.wat("a", "b")).to.not.exist(); //wat() uses path module which is stubbed so it returns undefined
+            expect(foo.useSub()).to.not.exist();
+            expect(foo.useSubDep("world")).to.not.exist();
+            expect(foo.useFuncDep()).to.equal("foo");
+            expect(foo.useInstance()).to.equal("value");
+            expect(foo.useConsts()).to.equal("i love pizza");
+            expect(foo.useStatic()).to.not.exist();
+            expect(foo.useConstsObj()).to.equal("im 1");
 
     var Bar = require("./testObjects/sub/bar");
 
@@ -587,19 +606,64 @@ setup functions
 	- relative path to the mock-required module or the absolute path
 
 
-<a name="requireMockerRequireSection"/>
-### require(parent, requirePath, options)
+<a id="requireMockerRequireSection"/>
+### .prototype.require(parent, requirePath, options)
 
 * `parent` - the parent module that is making the mock require - this is normally the test module
 * `requirePath` - the module to require, relative to the test module (parent)
-* <a name="requireMockerRequireOptions"/> `options` - additional setup options:
-	* dontStub: an array of paths that are required by the module or by its dependencies to not stub
+* <a id="requireMockerRequireOptions"/> `options` - additional setup options:
+	* dontMock: an array of paths that are required by the module or by its dependencies to not stub
+	* mockType: either: 
+		* an object map of key = path to a required module and value is one of the values in  RequireMocker.MOCK_TYPES (STUB or SPY)
+		ex: {"./sub/myModule": RequireMocker.MOCK_TYPES.STUB,
+				"../anotherModule":RequireMocker.MOCK_TYPES.SPY}
+		*  one of the values in RequireMocker.MOCK_TYPES (STUB or SPY)
 	* setup: object map containing the require path of stubbed dependency and a matching function. the function signature is: fn(stub)
 	* setupContext: the context to pass into the setup method(s)
 
+### .prototype.restore
+
+when called directly, will:
+* restore the stubs created by calls to require
+* remove the stubbed modules from node's module cache
+* clear the internal cache
+
+### .prototype.getStubs
+
+get a collection of the stubs created while modules were mock-required
+returns Object with the key as the path to the module, the value as the stubbed module exports
+
+### .prototype.getSpies
+
+get a collection of the spies created while modules were mock-required
+returns Object with the key as the path to the module, the value as the spied module exports
+
+### getGlobalDontMock()
+returns the array of paths/names used to determine which modules not to mock if they are a dependency to mock-required module
+
+### addGlobalDontMock(name)
+add a path/name of a module to not not mock if its a dependency of a mock-required module
+
+### removeGlobalDontMock(name)
+remove the path/name of a module registered to not be mocked
+
+### clearGlobalDontMock()
+Clear the entire list of modules registered to not be mocked
+
+### getGlobalMockType()
+returns the currently used value for the mock type (STUB or SPY)
+
+<a id="setGlobalMockTypeSection"/>
+### setGlobalMockType()
+
+define the mock type to use when mocking dependencies of mock-required modules
+* mockType (use RequireMocker.MOCK_TYPES)
+
+### Mock_TYPES
+Enum containing: STUB, SPY
 
 ---
-<a name="stirringSection"/>
+<a id="stirringSection"/>
 ## Stirring
 
 Internally, the mocha hooks (mainly the `before` hook) are used extensively to set up the fakes and your own befores/afters/etc.
