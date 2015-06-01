@@ -642,7 +642,7 @@ returns Object with the key as the path to the module, the value as the spied mo
 returns the array of paths/names used to determine which modules not to mock if they are a dependency to mock-required module
 
 ### addGlobalDontMock(name)
-add a path/name of a module to not not mock if its a dependency of a mock-required module
+add a path/name of a module to not not mock if its a dependency of a mock-required module. This method also accepts an array of name/path strings
 
 ### removeGlobalDontMock(name)
 remove the path/name of a module registered to not be mocked
