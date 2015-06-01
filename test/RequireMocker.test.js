@@ -20,6 +20,10 @@ describe("testing auto mocking for require", function () {
         expect(foo.useSub()).to.equal("hello world");
         expect(foo.useSubDep("world")).to.equal("hello world");
         expect(foo.useFuncDep()).to.equal("foo");
+        expect(foo.useInstance()).to.equal("value");
+        expect(foo.useConsts()).to.equal("i love pizza");
+        expect(foo.useConstsObj()).to.equal("im 1");
+        expect(foo.useStatic()).to.equal("you are: James");
     });
 
     describe("testing mock require", function () {    //wrapping in describe for the restir to clear the mock require
@@ -40,10 +44,16 @@ describe("testing auto mocking for require", function () {
             expect(foo.useSub()).to.not.exist();
             expect(foo.useSubDep("world")).to.not.exist();
             expect(foo.useFuncDep()).to.not.exist();
+            expect(foo.useInstance()).to.not.exist();
+            expect(foo.useStatic()).to.not.exist();
+            expect(foo.useConsts()).to.equal("i love pizza");
+            expect(foo.useConstsObj()).to.equal("im 1");
 
             var Bar = require("./testObjects/sub/bar");
-
             expect(Bar.prototype.useDep).to.have.been.calledWith("world");
+
+            var instance = require("./testObjects/sub/instance");
+            expect(instance.getValue).to.have.been.calledWith("test");
 
             foo.fs(function () {
                 done();
@@ -226,6 +236,10 @@ describe("testing auto mocking for require", function () {
             expect(foo.useSub()).to.equal("hello world");
             expect(foo.useSubDep("world")).to.equal("hello world");
             expect(foo.useFuncDep()).to.equal("foo");
+            expect(foo.useInstance()).to.equal("value");
+            expect(foo.useConsts()).to.equal("i love pizza");
+            expect(foo.useConstsObj()).to.equal("im 1");
+            expect(foo.useStatic()).to.equal("you are: James");
         });
 
         it("requiring a module that was a stub in previous should now work normally - not stubbed", function () {
@@ -235,6 +249,7 @@ describe("testing auto mocking for require", function () {
             expect(bar.start()).to.equal("hello world");
             expect(bar.getStats()).to.exist();
             expect(bar.useDep("world")).to.equal("hello world");
+            expect(Bar.myStatic("Tom")).to.equal("you are: Tom");
         });
 
         it("used node modules should work normally", function (done) {

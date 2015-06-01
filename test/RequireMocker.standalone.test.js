@@ -452,6 +452,7 @@ describe("testing auto mocking for require with standalone mocker", function () 
             expect(bar.start()).to.equal("hello world");
             expect(bar.getStats()).to.exist();
             expect(bar.useDep("world")).to.equal("hello world");
+            expect(Bar.myStatic("Tom")).to.equal("you are: Tom");
         });
 
         it("used node modules should work normally - standalone", function (done) {
