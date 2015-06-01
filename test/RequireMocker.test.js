@@ -214,39 +214,41 @@ describe("testing auto mocking for require", function () {
         });
     });
 
-    it("requiring the same module normally again should now work normally still", function () {
+    describe("test validity of modules after mocker has been used", function(){
 
-        var foo = require("./testObjects/foo");
+        it("requiring the same module normally again should now work normally still", function () {
 
-        expect(foo).to.exist();
-        expect(foo.bar()).to.equal("foo");
-        expect(foo.wat("a", "b")).to.equal("a/b"); //internally path should be stubbed and not set up to return anything
-        expect(foo.useSub()).to.equal("hello world");
-        expect(foo.useSubDep("world")).to.equal("hello world");
-        expect(foo.useFuncDep()).to.equal("foo");
-    });
+            var foo = require("./testObjects/foo");
 
-    it("requiring a module that was a stub in previous should now work normally - not stubbed", function () {
-
-        var Bar = require("./testObjects/sub/bar");
-        var bar = new Bar();
-        expect(bar.start()).to.equal("hello world");
-        expect(bar.getStats()).to.exist();
-        expect(bar.useDep("world")).to.equal("hello world");
-    });
-
-    it("used node modules should work normally", function (done) {
-
-        var fs = require("fs");
-
-        fs.readdir("./", function () {
-            done();
+            expect(foo).to.exist();
+            expect(foo.bar()).to.equal("foo");
+            expect(foo.wat("a", "b")).to.equal("a/b"); //internally path should be stubbed and not set up to return anything
+            expect(foo.useSub()).to.equal("hello world");
+            expect(foo.useSubDep("world")).to.equal("hello world");
+            expect(foo.useFuncDep()).to.equal("foo");
         });
 
-        var path = require("path");
+        it("requiring a module that was a stub in previous should now work normally - not stubbed", function () {
 
-        var resolved = path.resolve("/");
-        expect(resolved).to.equal("/");
+            var Bar = require("./testObjects/sub/bar");
+            var bar = new Bar();
+            expect(bar.start()).to.equal("hello world");
+            expect(bar.getStats()).to.exist();
+            expect(bar.useDep("world")).to.equal("hello world");
+        });
+
+        it("used node modules should work normally", function (done) {
+
+            var fs = require("fs");
+
+            fs.readdir("./", function () {
+                done();
+            });
+
+            var path = require("path");
+
+            var resolved = path.resolve("/");
+            expect(resolved).to.equal("/");
+        });
     });
-
 });
