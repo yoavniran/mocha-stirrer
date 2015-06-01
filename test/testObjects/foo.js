@@ -2,6 +2,10 @@ var path = require("path");
 var fs = require("fs");
 var func = require("./sub/func");
 var Bar = require("./sub/bar");
+var consts =require("./sub/consts");
+var instance = require("./sub/instance");
+
+var gruntBlanket = require("grunt-blanket");  //for making sure mocker will use the module name and not its resolved path
 
 module.exports = (function () {
     "use strict";
@@ -32,7 +36,18 @@ module.exports = (function () {
         },
         useFuncDep: function () {
             return func();
+        },
+        useConsts: function(){
+            return "i love " + consts.FOODS[1];
+        },
+        useConstsObj: function(){
+          return "im " + consts.STATES.OPEN;
+        },
+        useInstance: function(){
+            return instance.getValue("test");
+        },
+        useStatic: function(){
+            return Bar.myStatic("James");
         }
     };
 })();
-

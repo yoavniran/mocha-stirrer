@@ -451,14 +451,14 @@ describe("stirrer tests", function () {
             var cup = stirrer.grind({
                 name: "restirForEach cup",
                 restirForEach: true,
+                requires: ["./testObjects/foo"],
                 stubs: {
                     myStub: stirrer.EMPTY
                 },
 
-                requires: ["./testObjects/foo"],
-
                 beforeEach: function () {
                     this.stubs.myStub.returns("hello");
+                    this.getStub("sub/func").returns("bla");
                 },
                 afterEach: function () {
                     expect(this.stubs.myStub).to.have.been.called();

@@ -19,4 +19,8 @@ Bar.prototype.useDep = function(test){
 };
 
 
+Bar.myStatic = function(name){
+  return "you are: " + name;
+};
+
 module.exports = Bar;

@@ -116,8 +116,6 @@ describe("cupStirrer tests", function () {
             expect(testCup._befores).to.contain(funcB);
             expect(testCup._befores).to.contain(funcC);
             expect(testCup._befores).to.contain(funcD);
-
-            console.log("_befores === ", testCup._befores);
         });
 
     });
@@ -239,7 +237,7 @@ describe("cupStirrer tests", function () {
         });
 
         it("should stir conf immediately", function () {
-            CupStirrer.prototype._stirImmediate.call(testCup, {
+            CupStirrer.prototype._immediateStir.call(testCup, {
                 befores: function () {
                 },
                 afters: function () {

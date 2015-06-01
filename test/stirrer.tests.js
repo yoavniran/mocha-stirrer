@@ -17,3 +17,4 @@ require("./stirrer.test");
 
 require("./RequireMocker.test");
 require("./RequireMocker.standalone.test");
+require("./subTest/RequireMocker.sub.test");

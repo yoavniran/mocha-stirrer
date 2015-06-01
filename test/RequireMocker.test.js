@@ -31,7 +31,7 @@ describe("testing auto mocking for require", function () {
         cup.pour("should mock require successfully", function (done) {
 
             var foo = cup.require("./testObjects/foo", {
-                dontStub: ["fs"]
+                dontMock: ["fs"]
             });
 
             expect(foo).to.exist();
@@ -160,34 +160,58 @@ describe("testing auto mocking for require", function () {
             });
         });
 
-        //describe("pass requires to stir method", function(){
-        //
-        //    var cup = stirrer.grind();
-        //
-        //    cup.stir({
-        //        requires: [{
-        //            path: "./testObjects/foo",
-        //            options: {
-        //                setup: {
-        //                    "./sub/func": function (stub) {
-        //                        stub.returns("bla bla");
-        //                    }
-        //                }
-        //            }
-        //        }],
-        //        pars: function(){
-        //            return {
-        //                "funcRetVal": "bla bla"
-        //            };
-        //        }
-        //    });
-        //
-        //    cup.pour("fake require should be  set up correctly with setup", function () {
-        //        var foo = cup.required["./testObjects/foo"];
-        //        expect(foo).to.exist();
-        //        expect(foo.useFuncDep()).to.equal("bla bla");
-        //    });
-        //});
+        describe("pass requires in grind conf with dontMock options", function () {
+
+            var cup = stirrer.grind({
+                requires: [{
+                    path: "./testObjects/foo",
+                    options: {
+                        mockType: {
+                            "./sub/bar": stirrer.RequireMocker.MOCK_TYPES.SPY
+                        },
+                        setup: {
+                            "./sub/func": function (stub) {
+                                stub.returns("bla bla");
+                            }
+                        }
+                    }
+                }]
+            });
+
+            cup.pour("fake require should be set up correctly with setup with dontMock options", function () {
+
+                var foo = this.required["./testObjects/foo"];
+
+                expect(foo).to.exist();
+                expect(foo.useFuncDep()).to.equal("bla bla");
+                expect(foo.useSub()).to.equal("hello world");
+
+                expect(this.getSpy("sub/bar").prototype.start).to.have.been.calledOnce();
+            });
+        });
+
+        describe("test require with alias", function () {
+
+            var cup = stirrer.grind({
+                requires: [
+                    {path: "./testObjects/foo", options: {alias: "myFoo"}} //foo will be fake required
+                ]
+            });
+
+            cup.pour("fake require should set with an alias", function(){
+
+                var foo1 = this.required["./testObjects/foo"];
+                var foo2 = this.getRequired("./testObjects/foo");
+                var foo3 = this.getRequired("myFoo");
+
+                expect(foo1).to.exist();
+                expect(foo1).to.equal(foo2);
+                expect(foo2).to.equal(foo3);
+
+               expect(foo2.bar()).to.equal("foo");
+               expect(foo3.bar()).to.equal("foo");
+            });
+        });
     });
 
     it("requiring the same module normally again should now work normally still", function () {

@@ -413,5 +413,25 @@ describe("utils tests", function () {
             expect(levels[2]).to.equal("mocha-stirrer/test/testObjects/foo");
         });
     });
+
+    describe("test find", function () {
+
+        it("should find a string value", function () {
+
+            var res = utils.find({a: "foo", b: "bar"}, "bar");
+
+            expect(res).to.exist();
+            expect(res.b).to.equal("bar");
+        });
+
+        it("shouldnt find if no match", function(){
+
+            var res = utils.find({a: "foo", b: "bar"}, "test");
+
+            expect(res).to.not.exist();
+        });
+
+
+    });
 });
 

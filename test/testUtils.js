@@ -8,11 +8,28 @@ module.exports = (function () {
 
     var MOCHA_HOOK_NAMES = ["it", "before", "after", "beforeEach", "afterEach"];
 
-    function getMockBlendConfig(){
+    function getMockStartBlendConfig() {
         var conf = {
             globals: {
-                mochaHooks: {
-                },
+                mochaHooks: {},
+                mochaHooksNames: MOCHA_HOOK_NAMES
+            }
+        };
+
+        MOCHA_HOOK_NAMES.forEach(function (name) {
+            conf.globals.mochaHooks[name] = sinon.stub();
+        });
+
+        conf.globals.mochaHooks.before = getFunctionRunner();
+        conf.globals.mochaHooks.beforeEach = getFunctionRunner();
+
+        return conf;
+    }
+
+    function getMockBlendConfig() {
+        var conf = {
+            globals: {
+                mochaHooks: {},
                 mochaHooksNames: MOCHA_HOOK_NAMES
             }
         };
@@ -22,19 +39,19 @@ module.exports = (function () {
         return conf;
     }
 
-    function stubCupsMochaFunctions(cup){
+    function stubCupsMochaFunctions(cup) {
 
         cup = cup || {};
         cup._mocha = cup._mocha || {};
 
-        MOCHA_HOOK_NAMES.forEach(function(name){
+        MOCHA_HOOK_NAMES.forEach(function (name) {
             cup._mocha[name] = sinon.stub();
         });
 
         return cup;
     }
 
-    function mockCupsMochaFunctions(cup){
+    function mockCupsMochaFunctions(cup) {
 
         cup = cup || {};
         cup._mocha = cup._mocha || {};
@@ -46,11 +63,12 @@ module.exports = (function () {
 
     function getFunctionRunner(specialDone) {
         return function (name, fn) {
-            if (utils.isFunc(name)){
+            if (utils.isFunc(name)) {
                 fn = name;
             }
 
-            var doneFn = utils.isFunc(specialDone) ? specialDone : function(){};
+            var doneFn = utils.isFunc(specialDone) ? specialDone : function () {
+            };
 
             fn(doneFn);
         };
@@ -59,28 +77,31 @@ module.exports = (function () {
     function getFunctionRunnerExpectsError(expectedErr) {
         return function (name, fn) {
 
-            if (utils.isFunc(name)){
+            if (utils.isFunc(name)) {
                 fn = name;
             }
 
             expectedErr = expectedErr || Error;
 
-            expect(function(){fn();}).to.throw(expectedErr);
+            expect(function () {
+                fn();
+            }).to.throw(expectedErr);
         };
     }
 
-    function _addMockedHooks(obj){
+    function _addMockedHooks(obj) {
 
-        MOCHA_HOOK_NAMES.forEach(function(name){
+        MOCHA_HOOK_NAMES.forEach(function (name) {
             obj[name] = getFunctionRunner();
         });
     }
 
     return {
         getFunctionRunner: getFunctionRunner,
-        getFunctionRunnerExpectsError:getFunctionRunnerExpectsError,
-        mockCupsMochaFunctions:mockCupsMochaFunctions,
+        getFunctionRunnerExpectsError: getFunctionRunnerExpectsError,
+        mockCupsMochaFunctions: mockCupsMochaFunctions,
         getMockBlendConfig: getMockBlendConfig,
+        getMockStartBlendConfig: getMockStartBlendConfig,
         stubCupsMochaFunctions: stubCupsMochaFunctions
     };
 })();

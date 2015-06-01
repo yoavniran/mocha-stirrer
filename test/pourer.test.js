@@ -76,7 +76,7 @@ describe("pourer tests", function () {
             ],
             require: sinon.stub(),
             stir:  sinon.stub(),
-            _stirImmediate: sinon.stub(),
+            _immediateStir: sinon.stub(),
             required: {}
         });
 
@@ -90,7 +90,7 @@ describe("pourer tests", function () {
                 counter += 1; //2
 
                 expect(this.pars.foo).to.equal("bar");
-                expect(cup._stirImmediate).to.have.been.called();
+                expect(cup._immediateStir).to.have.been.called();
             }, {
                 //dummy object to cause stir immediate to be called
             });
