@@ -224,8 +224,8 @@ describe("testing auto mocking for require with standalone mocker", function () 
             var Bar = require("./testObjects/sub/bar");
             expect(Bar.prototype.useDep).to.have.been.calledWith("world");
 
-            var instance = require("./testObjects/sub/instance");
-            expect(instance.getValue).to.have.been.calledWith("test");
+            //var instance = require("./testObjects/sub/instance");
+            //expect(instance.getValue).to.have.been.calledWith("test");
 
             mocker.restore();
         });
@@ -252,8 +252,8 @@ describe("testing auto mocking for require with standalone mocker", function () 
             var Bar = require("./testObjects/sub/bar");
             expect(Bar.prototype.useDep).to.have.been.calledWith("world");
 
-            var instance = require("./testObjects/sub/instance");
-            expect(instance.getValue).to.have.been.calledWith("test");
+            //var instance = require("./testObjects/sub/instance");
+            //expect(instance.getValue).to.have.been.calledWith("test");
 
             mocker.restore();
         });
