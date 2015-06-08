@@ -144,40 +144,6 @@ describe("cupStirrer tests", function () {
         });
     });
 
-    //describe("test stir with requires", function () {
-    //
-    //    var testCup = getNewTestCup({});
-    //    var requireRet = {foo: "yes"};
-    //
-    //    before(function () {
-    //        testCup.require = sinon.stub();
-    //        testCup.require.returns(requireRet);
-    //    });
-    //
-    //    it("require should be called and modules stored in required property", function () {
-    //
-    //        var reqOptions = {test: "foo"};
-    //
-    //        CupStirrer.prototype.stir.call(testCup, {
-    //            requires: function () {
-    //                return [
-    //                    "./testObjects/foo",
-    //                    {path: "bar", options: reqOptions}
-    //                ];
-    //            }
-    //        });
-    //
-    //        expect(testCup.require).to.have.been.calledTwice();
-    //        expect(testCup.required).to.not.be.empty();
-    //
-    //        expect(testCup.required).to.have.been.calledWith("./testObjects/foo");
-    //        expect(testCup.required).to.have.been.calledWith("bar", reqOptions);
-    //
-    //        expect(testCup.required["./testObjects/foo"]).to.equal(requireRet);
-    //        expect(testCup.required.bar).to.equal(requireRet);
-    //    });
-    //});
-
     describe("test stir with requires failing", function () {
 
         var testCup = getNewTestCup({});
@@ -201,11 +167,9 @@ describe("cupStirrer tests", function () {
         var testCup = testUtils.stubCupsMochaFunctions({
             _befores: [],
             _afters: [],
-            //required: {},
-            //require: sinon.stub()
         });
 
-        var utils = require("../lib/utils");
+        //var utils = require("../lib/utils");
 
         it("should not stir conf immediately", function () {
             CupStirrer.prototype.stir.call(testCup, {
@@ -216,13 +180,9 @@ describe("cupStirrer tests", function () {
                 pars: {
                     myPar: "foo"
                 }
-                //requires: [
-                //    "path/to/module"
-                //]
             });
 
             expect(testCup._mocha.before).to.have.been.called();
-            //expect(testCup.require).to.have.callCount(1);
         });
     });
 

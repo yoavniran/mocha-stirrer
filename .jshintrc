@@ -25,6 +25,8 @@
   // Require `use strict` pragma in every file.
   "trailing": true,
   // Prohibit trailing whitespaces.
+  "unused": true,
+  //This option warns when you define and never use your variables
 
   "validthis": true,
   // Tolerate strict violations when the code is running in strict mode and you use this in a non-constructor function.

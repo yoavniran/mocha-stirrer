@@ -115,7 +115,7 @@ describe("testing auto mocking for require with standalone mocker", function () 
 
         it("should use the module name for external modules", function () {
 
-            var foo = mocker.require("./testObjects/foo", {
+            mocker.require("./testObjects/foo", {
                 dontMock: ["fs"]
             });
 
@@ -131,7 +131,7 @@ describe("testing auto mocking for require with standalone mocker", function () 
             var utils = require("../lib/utils");
             sinon.spy(utils, "deprecate");
 
-            var foo = mocker.require("./testObjects/foo", {
+            mocker.require("./testObjects/foo", {
                 dontStub: ["fs"]
             });
 
@@ -262,7 +262,7 @@ describe("testing auto mocking for require with standalone mocker", function () 
 
             Mocker.setGlobalMockType(Mocker.MOCK_TYPES.SPY);
 
-            var foo = mocker.require("./testObjects/foo", {
+            mocker.require("./testObjects/foo", {
                 dontMock: ["fs"]
             });
 
@@ -340,7 +340,7 @@ describe("testing auto mocking for require with standalone mocker", function () 
             mocker.restore();
         });
 
-        it("should stub/spy according to options with spy as global default", function(){
+        it("should stub/spy according to options with spy as global default", function () {
 
             Mocker.setGlobalMockType(Mocker.MOCK_TYPES.SPY);
 
@@ -365,7 +365,7 @@ describe("testing auto mocking for require with standalone mocker", function () 
             expect(foo.useConstsObj()).to.equal("im 1");
 
             var spies = mocker.getSpies();
-                     var stubs = mocker.getStubs();
+            var stubs = mocker.getStubs();
 
             expect(Object.keys(stubs)).to.have.length(2);
             expect(Object.keys(spies)).to.have.length(4);
@@ -379,9 +379,9 @@ describe("testing auto mocking for require with standalone mocker", function () 
             mocker.restore();
         });
 
-        it("should fail if specific module is required with invalid mock type", function(){
+        it("should fail if specific module is required with invalid mock type", function () {
 
-            expect(function() {
+            expect(function () {
                 mocker.require("./testObjects/foo", {
                     dontMock: ["fs"],
                     mockType: {

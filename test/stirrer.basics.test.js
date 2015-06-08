@@ -300,7 +300,7 @@ describe("stirrer basics tests", function () {
                 "testPar": 1
             },
             transformForEach: true,
-            transform: function (pars) {
+            transform: function () {
             }
         });
 
@@ -799,7 +799,7 @@ describe("stirrer basics tests", function () {
                 describe("stir in different stubbing", function(){
 
                     cup.stir({
-                        befores: function(next){
+                        befores: function(){
 
                         }
                     });

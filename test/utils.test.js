@@ -18,7 +18,7 @@ describe("utils tests", function () {
         });
 
         it("should return true for fn declaration ", function () {
-            function fn(a) {
+            function fn() {
             }
 
             expect(utils.isFunc(fn)).to.be.true();
@@ -86,14 +86,17 @@ describe("utils tests", function () {
         it("should be true for function with more than 0 args", function () {
 
             expect(utils.isAsync(function (a) {
+                return a;
             })).to.be.true();
 
             var asyncFn = function (a, b) {
+                return a+b;
             };
 
             expect(utils.isAsync(asyncFn)).to.be.true();
 
             expect(utils.isAsync(function (a, b, c) {
+                return a+b+c;
             })).to.be.true();
         });
 
@@ -109,10 +112,13 @@ describe("utils tests", function () {
 
         it("should use the optional length par", function () {
             expect(utils.isAsync(function (a) {
+                return a;
             }, 0)).to.be.ok();
             expect(utils.isAsync(function (a, b, c, d) {
+                return a+b+c+d;
             }, 3)).to.be.ok();
             expect(utils.isAsync(function (a, b, c, d) {
+                return a+b+c+d;
             }, 4)).to.not.be.ok();
         });
     });
