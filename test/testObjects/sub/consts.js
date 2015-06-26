@@ -1,4 +1,4 @@
-"use strict";
+/* jshint ignore:start */
 module.exports = {
     STATES: {
         OPEN: 1,
@@ -6,3 +6,4 @@ module.exports = {
     },
     FOODS: ["hamburger", "pizza", "sushi"]
 };
+/* jshint ignore:end */

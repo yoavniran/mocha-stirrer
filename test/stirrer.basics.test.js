@@ -4,11 +4,17 @@ var chai = require("chai"),
     sinonChai = require("sinon-chai"),
     testUtils = require("./testUtils");
 
-chai.use(dirtyChai);
-chai.use(sinonChai);
-
 describe("stirrer basics tests", function () {
     "use strict";
+	
+	chai.use(dirtyChai);
+	chai.use(sinonChai);
+	
+	var pathSeparator;
+	
+	before(function () {
+		pathSeparator = testUtils.getSeparator();
+	});
 
     describe("test no mocha hooks - error", function () {
 
@@ -334,7 +340,7 @@ describe("stirrer basics tests", function () {
             });
 
             testDontRestirCup.pour("run simple test", function () {
-                expect(this.spies.pathJoin("a", "b")).to.equal("a/b");
+                expect(this.spies.pathJoin("a", "b")).to.equal("a" + pathSeparator + "b");
             });
         });
 
@@ -366,7 +372,7 @@ describe("stirrer basics tests", function () {
             });
 
             testDontRestirCup.pour("run simple test", function () {
-                expect(this.spies.pathJoin("a", "b")).to.equal("a/b");
+                expect(this.spies.pathJoin("a", "b")).to.equal("a" + pathSeparator + "b");
             });
         });
 
@@ -797,7 +803,6 @@ describe("stirrer basics tests", function () {
                 });
 
                 describe("stir in different stubbing", function(){
-
                     cup.stir({
                         befores: function(){
 
@@ -806,8 +811,25 @@ describe("stirrer basics tests", function () {
 
                     cup.pour("");
                 });
-
             });
         });
-    });
+	});
+
+	describe("test separator", function () {
+		
+		var stirrer = require("../lib/index");
+		
+		after(function () {
+			stirrer.setSeparator("/");
+		});
+
+		it("test get default separator", function () {
+			expect(stirrer.getSeparator()).to.equal("/");
+		});
+
+		it("test set default separator", function () {
+			stirrer.setSeparator("\\");
+			expect(stirrer.getSeparator()).to.equal("\\");			
+		});
+	});
 });

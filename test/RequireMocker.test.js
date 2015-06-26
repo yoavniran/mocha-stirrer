@@ -1,7 +1,8 @@
 var chai = require("chai"),
     expect = chai.expect,
     dirtyChai = require("dirty-chai"),
-    sinonChai = require("sinon-chai"),
+	sinonChai = require("sinon-chai"),
+	testUtils = require("./testUtils"),
     stirrer = require("../lib/index");
 
 describe("testing auto mocking for require", function () {
@@ -9,14 +10,19 @@ describe("testing auto mocking for require", function () {
 
     chai.use(dirtyChai); //use lint-friendly chai assertions!
     chai.use(sinonChai);
-
+	
+	var pathSeparator;
+	before(function () {
+		pathSeparator = testUtils.getSeparator();
+	});
+	
     it("requiring the module should normally should work normally", function () {
 
         var foo = require("./testObjects/foo");
 
         expect(foo).to.exist();
         expect(foo.bar()).to.equal("foo");
-        expect(foo.wat("a", "b")).to.equal("a/b"); //internally path should be stubbed and not set up to return anything
+        expect(foo.wat("a", "b")).to.equal("a" + pathSeparator + "b"); //internally path should be stubbed and not set up to return anything
         expect(foo.useSub()).to.equal("hello world");
         expect(foo.useSubDep("world")).to.equal("hello world");
         expect(foo.useFuncDep()).to.equal("foo");
@@ -232,7 +238,7 @@ describe("testing auto mocking for require", function () {
 
             expect(foo).to.exist();
             expect(foo.bar()).to.equal("foo");
-            expect(foo.wat("a", "b")).to.equal("a/b"); //internally path should be stubbed and not set up to return anything
+            expect(foo.wat("a", "b")).to.equal("a" + pathSeparator + "b"); //internally path should be stubbed and not set up to return anything
             expect(foo.useSub()).to.equal("hello world");
             expect(foo.useSubDep("world")).to.equal("hello world");
             expect(foo.useFuncDep()).to.equal("foo");
@@ -253,17 +259,17 @@ describe("testing auto mocking for require", function () {
         });
 
         it("used node modules should work normally", function (done) {
+			
+			var path = require("path");
+			
+			var resolved = path.resolve("/");
+			expect(resolved).to.exist();
 
             var fs = require("fs");
 
             fs.readdir("./", function () {
                 done();
             });
-
-            var path = require("path");
-
-            var resolved = path.resolve("/");
-            expect(resolved).to.equal("/");
         });
     });
 });

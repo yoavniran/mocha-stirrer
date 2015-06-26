@@ -8,9 +8,6 @@ var chai = require("chai"),
     fs = require("fs"),
     testUtils = require("./testUtils");
 
-chai.use(dirtyChai);
-chai.use(sinonChai);
-
 var delayedCup = stirrer.grind({
     name: "delayed cup test",
     delay: true,
@@ -33,7 +30,16 @@ var delayedCup = stirrer.grind({
 });
 
 describe("stirrer delay tests", function () {
-    "use strict";
+	"use strict";
+	
+	chai.use(dirtyChai);
+	chai.use(sinonChai);
+
+	var pathSeparator;
+	
+	before(function () {
+		pathSeparator = testUtils.getSeparator();
+	});
 
     describe("test delay caused cup fakes to not be initialized", function () {
 
@@ -50,7 +56,7 @@ describe("stirrer delay tests", function () {
         delayedCup.pour("fakes should be initialized", function (done) {
 
             var result = this.spies.pathSpy("a", "b");
-            expect(result).to.equal("a/b");
+            expect(result).to.equal("a" + pathSeparator + "b");
 
             this.stubs.readdirSyncStub("bla", function (err) {
                 expect(err).to.equal(delayedCup.pars.readErr);
@@ -85,7 +91,7 @@ describe("stirrer delay tests", function () {
                 function (done) {
 
                     var result = this.spies.pathSpy("a", "b");
-                    expect(result).to.equal("a/b");
+                    expect(result).to.equal("a" + pathSeparator + "b");
 
                     this.stubs.readdirSyncStub("bla", function (err) {
                         expect(err).to.equal(delayedCup.pars.readErr);

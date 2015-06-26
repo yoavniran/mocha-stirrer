@@ -33,11 +33,11 @@ describe("cupBlender tests", function () {
             expect(fakeFoo).to.respondTo("bar");
 
             expect(cup.stubs).to.exist();
-            expect(cup.stubs).to.include.keys(["path", "fs"]);
+			expect(cup.stubs).to.include.keys(["path", "fs"]);
 
             expect(cup.getStub("sub/func")).to.exist();
-            expect(cup.getStub("testObjects/sub/func")).to.exist();
-            expect(cup.getStub("sub/func")).to.equal(cup.getStub("testObjects/sub/func"));
+            expect(cup.getStub("mocha-stirrer/sub/func")).to.exist();
+            expect(cup.getStub("sub/func")).to.equal(cup.getStub("mocha-stirrer/sub/func"));
 
             expect(cup.getStub("sub/bar")).to.exist();
         });
@@ -73,8 +73,8 @@ describe("cupBlender tests", function () {
             expect(cup.stubs).to.include.keys(["path", "fs"]);
 
             expect(cup.getStub("sub/func")).to.exist();
-            expect(cup.getStub("testObjects/sub/func")).to.exist();
-            expect(cup.getStub("sub/func")).to.equal(cup.getStub("testObjects/sub/func"));
+            expect(cup.getStub("mocha-stirrer/sub/func")).to.exist();
+            expect(cup.getStub("sub/func")).to.equal(cup.getStub("mocha-stirrer/sub/func"));
 
             expect(cup.getStub("sub/bar")).to.exist();
         });

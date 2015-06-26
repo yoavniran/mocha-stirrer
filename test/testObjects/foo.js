@@ -5,7 +5,7 @@ var Bar = require("./sub/bar");
 var consts =require("./sub/consts");
 var instance = require("./sub/instance");
 
-var gruntBlanket = require("grunt-blanket");  //for making sure mocker will use the module name and not its resolved path
+require("grunt-blanket");  //for making sure mocker will use the module name and not its resolved path
 
 module.exports = (function () {
     "use strict";
@@ -48,6 +48,11 @@ module.exports = (function () {
         },
         useStatic: function(){
             return Bar.myStatic("James");
-        }
+		}
+		//testPath: function (){
+		//	console.log("resolved with path: " + path.resolve("sub\\func"));
+		//	console.log("cwd: " + process.cwd());
+		//	//console.log("resolved with fs: " + fs.realpathSync("./sub/func"));
+		//}
     };
 })();

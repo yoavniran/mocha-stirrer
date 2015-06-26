@@ -7,3 +7,6 @@ results.txt
 output/coverage.lcov.txt
 output/coverage/
 output/coverage.html
+bin/
+mocha-stirrer.njsproj
+obj/

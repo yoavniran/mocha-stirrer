@@ -1,3 +1,4 @@
+/// <binding ProjectOpened='test' />
 module.exports = function (grunt) {
 
     require("time-grunt")(grunt);
@@ -16,7 +17,7 @@ module.exports = function (grunt) {
         pkg: grunt.file.readJSON("package.json"),
 
         jshint: {
-            files: ["./lib/*.js", "./test/*.js"],
+            files: ["./lib/*.js", "./test/**/*.js"],
             options: {
                 jshintrc: ".jshintrc"
             }

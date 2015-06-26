@@ -2,7 +2,8 @@ var chai = require("chai"),
     expect = chai.expect,
     dirtyChai = require("dirty-chai"),
     sinonChai = require("sinon-chai"),
-    sinon = require("sinon"),
+	sinon = require("sinon"),
+	testUtils = require("./testUtils"),
     Mocker = require("../lib/index").RequireMocker;
 
 describe("testing auto mocking for require with standalone mocker", function () {
@@ -10,6 +11,12 @@ describe("testing auto mocking for require with standalone mocker", function () 
 
     chai.use(dirtyChai); //use lint-friendly chai assertions!
     chai.use(sinonChai);
+	
+	var pathSeparator;
+	
+	before(function () {
+		pathSeparator = testUtils.getSeparator();
+	});
 
     describe("test basics", function () {
 
@@ -73,7 +80,7 @@ describe("testing auto mocking for require with standalone mocker", function () 
 
         expect(foo).to.exist();
         expect(foo.bar()).to.equal("foo");
-        expect(foo.wat("a", "b")).to.equal("a/b"); //internally path should be stubbed and not set up to return anything
+        expect(foo.wat("a", "b")).to.equal("a" + pathSeparator +"b"); //internally path should be stubbed and not set up to return anything
         expect(foo.useSub()).to.equal("hello world");
         expect(foo.useSubDep("world")).to.equal("hello world");
         expect(foo.useFuncDep()).to.equal("foo");
@@ -159,7 +166,7 @@ describe("testing auto mocking for require with standalone mocker", function () 
 
             expect(foo).to.exist();
             expect(foo.bar()).to.equal("foo");
-            expect(foo.wat("a", "b")).to.equal("a/b");
+            expect(foo.wat("a", "b")).to.equal("a" + pathSeparator +"b");
             expect(foo.useSub()).to.not.exist();
             expect(foo.useSubDep("world")).to.not.exist();
 
@@ -180,7 +187,7 @@ describe("testing auto mocking for require with standalone mocker", function () 
 
             expect(foo).to.exist();
             expect(foo.bar()).to.equal("foo");
-            expect(foo.wat("a", "b")).to.equal("a/b");
+            expect(foo.wat("a", "b")).to.equal("a" + pathSeparator + "b");
             expect(foo.useSub()).to.not.exist();
             expect(foo.useSubDep("world")).to.not.exist();
 
@@ -212,7 +219,7 @@ describe("testing auto mocking for require with standalone mocker", function () 
 
             expect(foo).to.exist();
             expect(foo.bar()).to.equal("foo");
-            expect(foo.wat("a", "b")).to.equal("a/b");
+            expect(foo.wat("a", "b")).to.equal("a" + pathSeparator + "b");
             expect(foo.useSub()).to.equal("hello world");
             expect(foo.useSubDep("world")).to.equal("hello world");
             expect(foo.useFuncDep()).to.equal("foo");
@@ -239,7 +246,7 @@ describe("testing auto mocking for require with standalone mocker", function () 
 
             expect(foo).to.exist();
             expect(foo.bar()).to.equal("foo");
-            expect(foo.wat("a", "b")).to.equal("a/b");
+            expect(foo.wat("a", "b")).to.equal("a" + pathSeparator + "b");
             expect(foo.useSub()).to.equal("hello world");
             expect(foo.useSubDep("world")).to.equal("hello world");
             expect(foo.useFuncDep()).to.equal("foo");
@@ -317,7 +324,7 @@ describe("testing auto mocking for require with standalone mocker", function () 
 
             expect(foo).to.exist();
             expect(foo.bar()).to.equal("foo");
-            expect(foo.wat("a", "b")).to.equal("a/b");
+            expect(foo.wat("a", "b")).to.equal("a" + pathSeparator + "b");
             expect(foo.useSub()).to.equal("hello world");
             expect(foo.useSubDep("world")).equal("hello world");
             expect(foo.useFuncDep()).to.not.exist();
@@ -435,7 +442,7 @@ describe("testing auto mocking for require with standalone mocker", function () 
 
             expect(foo).to.exist();
             expect(foo.bar()).to.equal("foo");
-            expect(foo.wat("a", "b")).to.equal("a/b"); //internally path should be stubbed and not set up to return anything
+            expect(foo.wat("a", "b")).to.equal("a" + pathSeparator + "b"); //internally path should be stubbed and not set up to return anything
             expect(foo.useSub()).to.equal("hello world");
             expect(foo.useSubDep("world")).to.equal("hello world");
             expect(foo.useFuncDep()).to.equal("foo");
@@ -456,17 +463,17 @@ describe("testing auto mocking for require with standalone mocker", function () 
         });
 
         it("used node modules should work normally - standalone", function (done) {
+			
+			var path = require("path");
+			
+			var resolved = path.resolve("/");
+			expect(resolved).to.exist();
 
             var fs = require("fs");
 
             fs.readdir("./", function () {
                 done();
             });
-
-            var path = require("path");
-
-            var resolved = path.resolve("/");
-            expect(resolved).to.equal("/");
         });
     });
 });
