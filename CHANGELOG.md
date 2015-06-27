@@ -1,3 +1,7 @@
+### 0.2.1
+* fixed issue with stub/spy aliases (available on Cup instance) not consistent between
+Windows and Linux/MacOS systems
+
 ### 0.2.0
 * configuration of requires on cup allows to define an alias that can be used later to retrieve the mock-required module from the cup
 * The parent module can now be set either globally or in the grind options
