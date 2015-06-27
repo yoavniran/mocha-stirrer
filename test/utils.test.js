@@ -8,6 +8,24 @@ describe("utils tests", function () {
     "use strict";
     chai.use(dirtyChai);
     chai.use(sinonChai);
+	
+	describe("test isNumber", function () {
+		it("should return true for numbers", function () {
+			expect(utils.isNumber(3)).to.be.true();
+			expect(utils.isNumber(10000)).to.be.true();
+			expect(utils.isNumber(0)).to.be.true();
+			expect(utils.isNumber(-12)).to.be.true();
+		});
+
+		it("should return false for not numbers", function () {
+			expect(utils.isNumber("1")).to.be.false();
+			expect(utils.isNumber(null)).to.be.false();
+			expect(utils.isNumber(undefined)).to.be.false();
+			expect(utils.isNumber(NaN)).to.be.false();
+			expect(utils.isNumber(false)).to.be.false();
+			expect(utils.isNumber(true)).to.be.false();
+		});
+	});
 
     describe("test isFunc", function () {
 
@@ -417,7 +435,41 @@ describe("utils tests", function () {
             expect(levels[0]).to.equal("testObjects/foo");
             expect(levels[1]).to.equal("test/testObjects/foo");
             expect(levels[2]).to.equal("mocha-stirrer/test/testObjects/foo");
-        });
+		});
+
+		it("should create levels successfully with parent provided", function () {
+			var levels = utils.getLeveledFileName("./test/foo.js", "./bla/bar.js");
+
+			expect(levels).to.exist();
+			expect(levels).to.have.length(3);
+
+			expect(levels[0]).to.equal("test/foo");
+			expect(levels[1]).to.equal("bla/test/foo");
+			expect(levels[2]).to.equal("mocha-stirrer/bla/test/foo");
+		});
+
+		it("should create levels successfully with parent and level count provided", function () {
+			var levels = utils.getLeveledFileName("./test/foo.js", "./bla/bar.js", 2);
+			
+			expect(levels).to.exist();
+			expect(levels).to.have.length(2);
+
+			expect(levels[0]).to.equal("test/foo");
+			expect(levels[1]).to.equal("bla/test/foo");
+		});
+
+		it("should create levels successfully with null parent and level count provided", function () {
+			
+			var levels = utils.getLeveledFileName("./test/testObjects/sub/foo.js", null, 4);
+			
+			expect(levels).to.exist();
+			expect(levels).to.have.length(4);
+			
+			expect(levels[0]).to.equal("sub/foo");
+			expect(levels[1]).to.equal("testObjects/sub/foo");
+			expect(levels[2]).to.equal("test/testObjects/sub/foo");
+			expect(levels[3]).to.equal("mocha-stirrer/test/testObjects/sub/foo");
+		});
     });
 
     describe("test find", function () {
