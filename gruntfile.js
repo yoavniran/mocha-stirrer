@@ -87,9 +87,10 @@ module.exports = function (grunt) {
         releaseTask: {
             options: {
                 github: {
-                    repo: "yoavniran/mocha-stirrer",
-                    usernameVar: "GRUNT_GH_USERNAME",
-                    passwordVar: "GRUNT_GH_PASSWORD"
+					repo: "yoavniran/mocha-stirrer",
+					accessTokenVar: "GRUNT_GH_TOKEN"
+                    //usernameVar: "GRUNT_GH_USERNAME",
+                    //passwordVar: "GRUNT_GH_PASSWORD"
                 }
             }
         }

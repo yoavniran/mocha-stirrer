@@ -10,3 +10,5 @@ output/coverage.html
 bin/
 mocha-stirrer.njsproj
 obj/
+.ntvs_analysis.dat
+.vs/
